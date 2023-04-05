@@ -1,0 +1,32 @@
+run:
+  timeout: 1m
+  tests: false
+
+output:
+  format: colored-line-number
+
+linter-settings:
+  gofmt:
+    simplify: true
+
+linters:
+  disable-all: true
+  enable:
+    - govet
+    - golint
+    - staticcheck
+    - errcheck
+    #    - gofmt
+    #    - goimports
+    #    - gochecknoglobals
+    - gochecknoinits
+    - gosimple
+    - goconst
+    - unconvert
+    - varcheck
+    - unused
+    - deadcode
+    - unparam
+    - ineffassign
+    - scopelint
+  fast: false

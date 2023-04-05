@@ -1,0 +1,4 @@
+local-pg:
+  dialect: postgres
+  datasource: host=postgres port=5432 user=postgres password=postgres dbname=aggregator sslmode=disable
+  dir: pg
