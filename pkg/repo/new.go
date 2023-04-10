@@ -5,10 +5,10 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/provider"
 )
 
-type MainAPIRepository struct {
+type UserAPIRepository struct {
 	AuthServicesDB IDB
 }
 
-func NewMainAPIRepoPool(p *provider.MainAPIProvider, l logger.ILogger) *MainAPIRepository {
-	return &MainAPIRepository{AuthServicesDB: NewAuthServicesDB(p.AuthServicesDB(), l)}
+func NewUserAPIRepoPool(p *provider.UserAPIProvider, l logger.ILogger) *UserAPIRepository {
+	return &UserAPIRepository{AuthServicesDB: NewAuthServicesDB(p.AuthServicesDB(), l)}
 }

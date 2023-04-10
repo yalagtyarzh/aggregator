@@ -10,25 +10,25 @@ type IProvider interface {
 	Close()
 }
 
-type MainAPIProvider struct {
+type UserAPIProvider struct {
 	log logger.ILogger
 	db  *sqlx.DB
 }
 
-func NewMainAPIProvider(appConfig *config.MainAPIConfig, log logger.ILogger) *MainAPIProvider {
+func NewUserAPIProvider(appConfig *config.UserAPIConfig, log logger.ILogger) *UserAPIProvider {
 	db, err := NewAuthServicesDBConnection(appConfig.DB)
 	if err != nil {
 		log.Fatalf("error connecting to authorized services db: %s", err.Error())
 	}
 	log.Infof("connected to authorized services db")
 
-	return &MainAPIProvider{
+	return &UserAPIProvider{
 		log: log,
 		db:  db,
 	}
 }
 
-func (p *MainAPIProvider) Close() {
+func (p *UserAPIProvider) Close() {
 	if err := p.db.Close(); err != nil {
 		p.log.Errorf("error while closing db: %s", err.Error())
 	}
@@ -36,6 +36,6 @@ func (p *MainAPIProvider) Close() {
 	p.log.Infof("Resources closed")
 }
 
-func (p *MainAPIProvider) AuthServicesDB() *sqlx.DB {
+func (p *UserAPIProvider) AuthServicesDB() *sqlx.DB {
 	return p.db
 }

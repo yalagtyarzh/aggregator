@@ -3,6 +3,7 @@ module github.com/yalagtyarzh/aggregator
 go 1.19
 
 require (
+	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.5
@@ -13,7 +14,6 @@ require (
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/caarlos0/env v3.5.0+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

@@ -1,14 +1,14 @@
-package main_api
+package admin_api
 
 import (
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 )
 
 type Handlers struct {
-	logic IMainAPILogic
+	logic IAdminAPILogic
 	log   logger.ILogger
 }
 
-func NewMainAPIHandlers(u IMainAPILogic, l logger.ILogger) *Handlers {
+func NewAdminAPIHandlers(u IAdminAPILogic, l logger.ILogger) *Handlers {
 	return &Handlers{u, l}
 }

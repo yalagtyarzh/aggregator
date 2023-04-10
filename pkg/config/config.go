@@ -40,15 +40,15 @@ type ServerOptionsConfig struct {
 	IdleTimeout  time.Duration `env:"SERVER_IDLE_TIMEOUT" envDefault:"40s"`
 }
 
-type MainAPIConfig struct {
+type UserAPIConfig struct {
 	Logger        logger.LogConfig
 	Basic         BasicConfig
 	DB            DBConfig
 	ServerOptions ServerOptionsConfig
 }
 
-func GetMainAPIConfig() *MainAPIConfig {
-	var c MainAPIConfig
+func GetUserAPIConfig() *UserAPIConfig {
+	var c UserAPIConfig
 	once.Do(func() {
 		if err := env.Parse(&c); err != nil {
 			fmt.Printf("read configuration error: %s\n", err.Error())
@@ -64,6 +64,6 @@ func GetMainAPIConfig() *MainAPIConfig {
 	return &c
 }
 
-func (c *MainAPIConfig) Validate() error {
+func (c *UserAPIConfig) Validate() error {
 	return nil
 }

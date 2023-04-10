@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:14
+    restart: always
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=aggregator
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d aggregator -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+  user-api:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: docker/local/user.dockerfile
+    environment:
+      ENVIRONMENT: "local-docker"
+      APP_NAME: "user-api"
+      PROMETHEUS_PREFIX: "aggregator"
+      BACKEND_DB_SCHEME: "postgres"
+      BACKEND_DB_CONN_STR: "host=postgres port=5432 user=postgres password=postgres dbname=aggregator sslmode=disable"
+      SERVER_BIND: ":9000"
+      SERVER_METRICS_BIND: ":9090"
+      SERVER_PROBE_BIND: ":9091"
+      LOG_PRETTY: true
+    ports:
+      - "127.0.0.1:80:9000"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  admin-api:
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: docker/local/admin.dockerfile
+    environment:
+      ENVIRONMENT: "local-docker"
+      APP_NAME: "admin-api"
+      PROMETHEUS_PREFIX: "aggregator"
+      BACKEND_DB_SCHEME: "postgres"
+      BACKEND_DB_CONN_STR: "host=postgres port=5432 user=postgres password=postgres dbname=aggregator sslmode=disable"
+      SERVER_BIND: ":9000"
+      SERVER_METRICS_BIND: ":9090"
+      SERVER_PROBE_BIND: ":9091"
+      LOG_PRETTY: true
+    ports:
+      - "127.0.0.1:80:9000"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  backend:
+    name: backend
+
