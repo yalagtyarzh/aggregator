@@ -1,0 +1,15 @@
+openapi: 3.0.1
+
+info:
+  description: ""
+  title: Aggregator API
+  version: 1.0.0
+
+tags:
+  - name: User API V1
+    description: "Aggregator user API"
+  - name: Admin API V1
+    description: "Aggregator admin API"
+
+paths:
+
