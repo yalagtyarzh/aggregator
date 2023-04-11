@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"github.com/yalagtyarzh/aggregator/pkg/http/middleware"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"net/http"
 	"strings"
@@ -45,7 +46,7 @@ type SuperHandler func(w http.ResponseWriter, r *http.Request) *AppError
 
 func CallHandler(h SuperHandler, w http.ResponseWriter, r *http.Request, log logger.ILogger) {
 	if err := h(w, r); err != nil {
-		log.Errorf("%s %s: %s", r.URL.Path, r.Method, err.Error())
+		log.Errorf("X-Request-Id: %s, %s %s: %s", r.Header.Get(middleware.RequestIdHeader), r.URL.Path, r.Method, err.Error())
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(err.Err.Code)
 		b, _ := json.Marshal(err)
