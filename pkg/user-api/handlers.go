@@ -1,10 +1,12 @@
 package user_api
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"net/http"
+	"strconv"
 )
 
 // query params
@@ -13,8 +15,9 @@ const (
 )
 
 // errors
-const (
-	errNoProductID = errors.New("")
+var (
+	errInvalidProductID = errors.New("invalid product id in request")
+	errNoProductID      = errors.New("no product id in request")
 )
 
 type Handlers struct {
@@ -33,6 +36,35 @@ func (h *Handlers) ReviewsGet(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) reviewsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
 	productId := r.URL.Query().Get(productId)
 	if productId == "" {
-		return helpers.NewError()
+		return helpers.NewError(http.StatusBadRequest, errNoProductID, "no product id in request", true)
 	}
+
+	pid, err := strconv.Atoi(productId)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, errInvalidProductID, "invalid product id in request", true)
+	}
+
+	resp, err := h.logic.GetReviews(pid)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
 }
+
+//func (h *Handlers) UserReviewsGet(w http.ResponseWriter, r *http.Request) {
+//	helpers.CallHandler(h.userReviewsGet, w, r, h.log)
+//}
+//
+//func (h *Handlers) userReviewsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+//	return nil
+//}

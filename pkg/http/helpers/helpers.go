@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var errNoErrorInfo = "no error in NewError func"
+
 type AppError struct {
 	Err *Err `json:"error"`
 }
@@ -16,24 +18,31 @@ type Err struct {
 	Code            int    `json:"code"`
 	Message         string `json:"message"`
 	IsBusinessError bool   `json:"isBusinessError"`
-	Error           string `json:"error"`
+	Error           string `json:"-"`
 }
 
-func NewError(err error, errMsg string, isBusinessError bool) *AppError {
+func NewError(code int, err error, errMsg string, isBusinessError bool) *AppError {
 	if err, ok := err.(*AppError); ok {
 		return err
 	}
 
-	var errStr string
 	if err != nil {
-		errStr = err.Error()
+		return &AppError{
+			Err: &Err{
+				Code:            http.StatusInternalServerError,
+				Message:         strings.ReplaceAll(errMsg, `"`, `\"`),
+				IsBusinessError: false,
+				Error:           errNoErrorInfo,
+			},
+		}
 	}
 
 	return &AppError{
 		Err: &Err{
+			Code:            code,
 			Message:         strings.ReplaceAll(errMsg, `"`, `\"`),
 			IsBusinessError: isBusinessError,
-			Error:           errStr,
+			Error:           err.Error(),
 		},
 	}
 }

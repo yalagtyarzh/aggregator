@@ -6,9 +6,9 @@ import (
 )
 
 type UserAPIRepository struct {
-	AuthServicesDB IDB
+	DB IDB
 }
 
 func NewUserAPIRepoPool(p *provider.UserAPIProvider, l logger.ILogger) *UserAPIRepository {
-	return &UserAPIRepository{AuthServicesDB: NewAuthServicesDB(p.AuthServicesDB(), l)}
+	return &UserAPIRepository{DB: NewAuthServicesDB(p.AuthServicesDB(), l)}
 }
