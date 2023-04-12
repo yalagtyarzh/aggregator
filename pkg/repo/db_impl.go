@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"github.com/jmoiron/sqlx"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
@@ -11,15 +12,25 @@ type authServicesDBPSQL struct {
 	db *sqlx.DB
 }
 
-func (a authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
-	r := make([]models.Review, 0)
-
-	return r, nil
-}
-
 func NewAuthServicesDB(db *sqlx.DB, log logger.ILogger) IDB {
 	return &authServicesDBPSQL{
 		log,
 		db,
 	}
+}
+
+func (d *authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
+	r := make([]models.Review, 0)
+
+	stmt := `SELECT r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at 
+			 from reviews r
+			 join products_reviews pr on r.id = pr.review_id
+			 where pr.product_id = $1
+	`
+
+	if err := d.db.Select(&r, stmt, pid); err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	return r, nil
 }
