@@ -7,6 +7,11 @@ CREATE TABLE rating
     name_ext VARCHAR(25)        NOT NULL
 );
 
+CREATE TABLE genres
+(
+    name TEXT NOT NULL UNIQUE
+);
+
 CREATE TABLE products
 (
     id           SERIAL PRIMARY KEY NOT NULL,
@@ -18,6 +23,12 @@ CREATE TABLE products
     rating_id    INTEGER            NOT NULL REFERENCES rating (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE products_genres
+(
+    product_id INTEGER NOT NULL REFERENCES products (id),
+    genre      TEXT    NOT NULL REFERENCES genres (name)
 );
 
 CREATE TABLE roles
@@ -80,7 +91,11 @@ DROP TABLE permissions;
 
 DROP TABLE roles;
 
+DROP TABLE products_genres;
+
 DROP TABLE products;
+
+DROP TABLE genres;
 
 DROP TABLE rating
 

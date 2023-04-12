@@ -7,6 +7,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // query params
@@ -14,6 +15,8 @@ const (
 	productId = "pid"
 	after     = "after"
 	limit     = "limit"
+	year      = "year"
+	genre     = "genre"
 )
 
 // errors
@@ -132,6 +135,43 @@ func (h *Handlers) ProductsGetMany(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	after, err := strconv.Atoi(r.URL.Query().Get(after))
+	if err != nil || after < 0 {
+		after = 0
+	}
+
+	limit, err := strconv.Atoi(r.URL.Query().Get(limit))
+	if err != nil || limit > 100 {
+		limit = 100
+	}
+
+	year, err := strconv.Atoi(year)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "Invalid year", true)
+	}
+
+	now := time.Now().Year()
+	if year > now {
+		year = now
+	}
+
+	genre := r.URL.Query().Get(genre)
+
+	resp, err := h.logic.GetProducts(after, limit, year, genre)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
 
 	return nil
 }
