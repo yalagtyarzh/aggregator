@@ -18,11 +18,29 @@ func NewUserAPILogic(repositoryPool *repo.UserAPIRepository, log logger.ILogger)
 	}
 }
 
-func (l *UserAPILogic) GetReviews(pid int) ([]models.Review, error) {
-	r, err := l.repo.DB.GetReviewsByProductID(pid)
+func (l *UserAPILogic) GetReviews(productId int) ([]models.Review, error) {
+	r, err := l.repo.DB.GetReviewsByProductID(productId)
 	if err != nil {
 		return nil, err
 	}
 
 	return r, nil
+}
+
+func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
+	p, err := l.repo.DB.GetProductById(productId)
+	if err != nil {
+		return models.Product{}, nil
+	}
+
+	return *p, nil
+}
+
+func (l *UserAPILogic) GetProductScore(productId int) (models.Score, error) {
+	s, err := l.repo.DB.GetProductScoreById(productId)
+	if err != nil {
+		return models.Score{}, nil
+	}
+
+	return *s, nil
 }

@@ -30,9 +30,9 @@ CREATE TABLE permissions
 
 CREATE TABLE roles_permissions
 (
-    role        TEXT NOT NULL REFERENCES roles (name),
-    permissions TEXT NOT NULL REFERENCES roles (permissions),
-    UNIQUE (role, permissions)
+    role       TEXT NOT NULL REFERENCES roles (name),
+    permission TEXT NOT NULL REFERENCES permissions (name),
+    UNIQUE (role, permission)
 );
 
 CREATE TABLE users
@@ -51,7 +51,7 @@ CREATE TABLE users
 
 CREATE TABLE reviews
 (
-    id           SERIAL PRIMARY KEY NOT NULL ,
+    id           SERIAL PRIMARY KEY NOT NULL,
     score        INTEGER            NOT NULL,
     content      TEXT               NOT NULL,
     content_html TEXT               NOT NULL,
@@ -63,5 +63,5 @@ CREATE TABLE reviews
 CREATE TABLE products_reviews
 (
     product_id INTEGER NOT NULL REFERENCES products (id),
-    review_id  INTEGER NOT NULL REFERENCES reviews (id),
-)
+    review_id  INTEGER NOT NULL REFERENCES reviews (id)
+);

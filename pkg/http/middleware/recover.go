@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"net/http"
 	"runtime/debug"
 )
@@ -15,12 +14,10 @@ func (m *Middleware) RecoverMiddleware(h http.Handler) http.Handler {
 			if r != nil {
 				stacktrace := string(debug.Stack())
 				switch t := r.(type) {
-				case string:
-					err = helpers.NewError(fmt.Errorf(`panic: %s, stacktrace: %s`, t, stacktrace), "", false)
-				case error:
-					err = helpers.NewError(fmt.Errorf(`panic: %v, stacktrace: %s`, t, stacktrace), "", false)
+				case string, error:
+					err = fmt.Errorf(`panic: %s, stacktrace: %s`, t, stacktrace)
 				default:
-					err = helpers.NewError(fmt.Errorf(`unknown panic`), "", false)
+					err = fmt.Errorf(`unknown panic`)
 				}
 
 				m.appLogger.Error(err)

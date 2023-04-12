@@ -18,9 +18,9 @@ type UserAPIProvider struct {
 func NewUserAPIProvider(appConfig *config.UserAPIConfig, log logger.ILogger) *UserAPIProvider {
 	db, err := NewAuthServicesDBConnection(appConfig.DB)
 	if err != nil {
-		log.Fatalf("error connecting to authorized services db: %s", err.Error())
+		log.Fatalf("error connecting to aggregator db: %s", err.Error())
 	}
-	log.Infof("connected to authorized services db")
+	log.Infof("connected to aggregator db")
 
 	return &UserAPIProvider{
 		log: log,

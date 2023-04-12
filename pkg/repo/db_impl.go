@@ -22,7 +22,7 @@ func NewAuthServicesDB(db *sqlx.DB, log logger.ILogger) IDB {
 func (d *authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 	r := make([]models.Review, 0)
 
-	stmt := `SELECT r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at 
+	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at 
 			 from reviews r
 			 join products_reviews pr on r.id = pr.review_id
 			 where pr.product_id = $1
@@ -33,4 +33,28 @@ func (d *authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, er
 	}
 
 	return r, nil
+}
+
+func (d *authServicesDBPSQL) GetProductById(productId int) (*models.Product, error) {
+	var p models.Product
+
+	stmt := `select id, title, description, year, release_date, studio, rating, created_at, updated_at from products where id = $1 limit 1`
+
+	if err := d.db.Get(&p, stmt, productId); err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+func (d *authServicesDBPSQL) GetProductScoreById(productId int) (*models.Score, error) {
+	var s models.Score
+
+	stmt := `select round(AVG(r.score)) as score from reviews r join products_review pr on r.id = pr.review_id where pr.product_id = $1`
+
+	if err := d.db.Get(&s, stmt, productId); err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	return &s, nil
 }

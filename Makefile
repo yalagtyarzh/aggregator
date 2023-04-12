@@ -15,13 +15,13 @@ run-admin-api: build-admin-api
 	./.bin/user
 
 compose-build:
-	docker-compose -f docker-compose-local.yml build
+	docker-compose -f docker-compose.yml build
 
 compose-up:
-	docker-compose -f docker-compose-local.yml up --remove-orphans --abort-on-container-exit
+	docker-compose -f docker-compose.yml up --remove-orphans --abort-on-container-exit
 
 compose-down:
-	docker-compose -f docker-compose-local.yml down --remove-orphans
+	docker-compose -f docker-compose.yml down --remove-orphans
 
 migrate-up-local:
 	docker build -t db-migrate db
