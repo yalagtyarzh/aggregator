@@ -68,6 +68,7 @@ CREATE TABLE reviews
     score        INTEGER            NOT NULL,
     content      TEXT               NOT NULL,
     content_html TEXT               NOT NULL,
+    user_id      UUID               NOT NULL REFERENCES users (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     CHECK (score BETWEEN 0 AND 100)

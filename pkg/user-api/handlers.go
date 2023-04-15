@@ -3,8 +3,10 @@ package user_api
 import (
 	"encoding/json"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
+	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,6 +25,7 @@ const (
 var (
 	errInvalidProductID = errors.New("invalid product id in request")
 	errNoProductID      = errors.New("no product id in request")
+	errInvalidUserID    = errors.New("invalid user id")
 )
 
 type Handlers struct {
@@ -64,6 +67,24 @@ func (h *Handlers) reviewsGet(w http.ResponseWriter, r *http.Request) *helpers.A
 	_, _ = w.Write(b)
 
 	return nil
+}
+
+func (h *Handlers) ReviewsCreate(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.reviewsCreate, w, r, h.log)
+}
+
+func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	userID, ok := r.Context().Value("userID").(uuid.UUID)
+	if !ok {
+		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+	}
+
+	var req models.ReviewCreate
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&req); err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
 }
 
 func (h *Handlers) ProductsGet(w http.ResponseWriter, r *http.Request) {
@@ -145,10 +166,7 @@ func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *help
 		limit = 100
 	}
 
-	year, err := strconv.Atoi(year)
-	if err != nil {
-		return helpers.NewError(http.StatusBadRequest, err, "Invalid year", true)
-	}
+	year, _ := strconv.Atoi(year)
 
 	now := time.Now().Year()
 	if year > now {
@@ -170,8 +188,6 @@ func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *help
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(b)
-
-	return nil
 
 	return nil
 }
