@@ -6,7 +6,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/config"
 )
 
-func NewAuthServicesDBConnection(c config.DBConfig) (*sqlx.DB, error) {
+func NewDBConnection(c config.DBConfig) (*sqlx.DB, error) {
 	db, err := sqlx.Open(c.Scheme, c.ConnStr)
 	if err != nil {
 		return nil, err

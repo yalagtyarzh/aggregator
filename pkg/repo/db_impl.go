@@ -15,7 +15,7 @@ type DBPSQL struct {
 	db *sqlx.DB
 }
 
-func NewAuthServicesDB(db *sqlx.DB, log logger.ILogger) IDB {
+func NewDB(db *sqlx.DB, log logger.ILogger) IDB {
 	return &DBPSQL{
 		log,
 		db,

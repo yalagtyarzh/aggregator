@@ -10,5 +10,5 @@ type UserAPIRepository struct {
 }
 
 func NewUserAPIRepoPool(p *provider.UserAPIProvider, l logger.ILogger) *UserAPIRepository {
-	return &UserAPIRepository{DB: NewAuthServicesDB(p.AuthServicesDB(), l)}
+	return &UserAPIRepository{DB: NewDB(p.DB(), l)}
 }

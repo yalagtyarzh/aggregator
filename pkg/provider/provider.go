@@ -16,7 +16,7 @@ type UserAPIProvider struct {
 }
 
 func NewUserAPIProvider(appConfig *config.UserAPIConfig, log logger.ILogger) *UserAPIProvider {
-	db, err := NewAuthServicesDBConnection(appConfig.DB)
+	db, err := NewDBConnection(appConfig.DB)
 	if err != nil {
 		log.Fatalf("error connecting to aggregator db: %s", err.Error())
 	}
@@ -36,6 +36,6 @@ func (p *UserAPIProvider) Close() {
 	p.log.Infof("Resources closed")
 }
 
-func (p *UserAPIProvider) AuthServicesDB() *sqlx.DB {
+func (p *UserAPIProvider) DB() *sqlx.DB {
 	return p.db
 }
