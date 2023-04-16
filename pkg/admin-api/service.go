@@ -24,6 +24,8 @@ func NewAdminAPIService(repositoryPool *repo.UserAPIRepository, log logger.ILogg
 
 func (s *AdminAPIService) Router(r *mux.Router, mw *middleware.Middleware) {
 	v1 := r.PathPrefix("/api/v1/admin").Subrouter()
+	v1.HandleFunc("/product/create", s.handlers.ProductCreate).Methods("POST")
+	v1.HandleFunc("/product/update", s.handlers.ProductUpdate).Methods("POST")
 
 	v1.Use(mw.AuthMiddleware)
 }

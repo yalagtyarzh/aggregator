@@ -18,6 +18,28 @@ type Product struct {
 	UpdatedAt   time.Time `json:"UpdatedAt" db:"updated_at"`
 }
 
+type ProductCreate struct {
+	Title       string    `json:"title" db:"title"`
+	Description string    `json:"description" db:"description"`
+	Year        int       `json:"year" db:"year"`
+	Genres      []Genre   `json:"genres"`
+	ReleaseDate time.Time `json:"releaseDate" db:"release_date"`
+	Studio      string    `json:"studio" db:"studio"`
+	Rating      string    `json:"rating" db:"rating"`
+}
+
+type ProductUpdate struct {
+	ID          int       `json:"id" db:"id"`
+	Title       string    `json:"title" db:"title"`
+	Description string    `json:"description" db:"description"`
+	Year        int       `json:"year" db:"year"`
+	Genres      []Genre   `json:"genres"`
+	ReleaseDate time.Time `json:"releaseDate" db:"release_date"`
+	Studio      string    `json:"studio" db:"studio"`
+	Rating      string    `json:"rating" db:"rating"`
+	Delete      bool      `json:":delete"`
+}
+
 type Review struct {
 	ID          int       `json:"id" db:"id"`
 	Score       int       `json:"score" db:"score"`
@@ -29,9 +51,18 @@ type Review struct {
 }
 
 type ReviewCreate struct {
-	Score       int    `json:"score" db:"score"`
-	Content     string `json:"content" db:"content"`
-	ContentHTML string `json:"contentHTML" db:"content_html"`
+	ProductID   int    `json:"productId"`
+	Score       int    `json:"score"`
+	Content     string `json:"content"`
+	ContentHTML string `json:"contentHTML"`
+}
+
+type ReviewUpdate struct {
+	ID          int    `json:"id"`
+	Score       int    `json:"score"`
+	Content     string `json:"content"`
+	ContentHTML string `json:"contentHTML"`
+	Delete      bool   `json:"bool"`
 }
 
 type User struct {
@@ -51,5 +82,9 @@ type Score struct {
 }
 
 type Genre struct {
-	Name string `json:"genre" db:"genre"`
+	Genre string `json:"genre" db:"genre"`
+}
+
+type Permission struct {
+	Permission string `json:"permission" db:"permission"`
 }

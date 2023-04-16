@@ -1,8 +1,6 @@
 CREATE TABLE rating
 (
-    id       SERIAL PRIMARY KEY NOT NULL,
-    name     VARCHAR(2)         NOT NULL,
-    name_ext VARCHAR(25)        NOT NULL
+    name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE genres
@@ -18,7 +16,7 @@ CREATE TABLE products
     year         INTEGER            NOT NULL,
     release_date TIMESTAMP          NOT NULL,
     studio       TEXT               NOT NULL,
-    rating_id    INTEGER            NOT NULL REFERENCES rating (id),
+    rating       TEXT               NOT NULL REFERENCES rating (name),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW()
 );
@@ -66,6 +64,7 @@ CREATE TABLE reviews
     score        INTEGER            NOT NULL,
     content      TEXT               NOT NULL,
     content_html TEXT               NOT NULL,
+    user_id UUID NOT NULL REFERENCES users (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     CHECK (score BETWEEN 0 AND 100)

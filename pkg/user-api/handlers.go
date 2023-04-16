@@ -26,6 +26,8 @@ var (
 	errInvalidProductID = errors.New("invalid product id in request")
 	errNoProductID      = errors.New("no product id in request")
 	errInvalidUserID    = errors.New("invalid user id")
+	errNoPermissions    = errors.New("no permission for to do request")
+	errInvalidScore     = errors.New("invalid score")
 )
 
 type Handlers struct {
@@ -74,7 +76,7 @@ func (h *Handlers) ReviewsCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	userID, ok := r.Context().Value("userID").(uuid.UUID)
+	actorID, ok := r.Context().Value("userID").(uuid.UUID)
 	if !ok {
 		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
 	}
@@ -85,6 +87,54 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 	if err := d.Decode(&req); err != nil {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
+
+	if req.Score > 100 || req.Score < 0 {
+		return helpers.NewError(http.StatusBadRequest, errInvalidScore, "invalid score", true)
+	}
+
+	err := h.logic.CreateReview(req, actorID)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	return nil
+}
+
+func (h *Handlers) ReviewsUpdate(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.reviewsUpdate, w, r, h.log)
+}
+
+func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	actorID, ok := r.Context().Value("userID").(uuid.UUID)
+	if !ok {
+		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+	}
+
+	var req models.ReviewUpdate
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&req); err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+
+	if req.Score > 100 || req.Score < 0 {
+		return helpers.NewError(http.StatusBadRequest, errInvalidScore, "invalid score", true)
+	}
+
+	err := h.logic.UpdateReview(req, actorID)
+	if err == errNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permissions", true)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	return nil
 }
 
 func (h *Handlers) ProductsGet(w http.ResponseWriter, r *http.Request) {
