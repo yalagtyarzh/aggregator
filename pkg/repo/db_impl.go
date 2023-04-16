@@ -10,19 +10,19 @@ import (
 	"strings"
 )
 
-type authServicesDBPSQL struct {
+type DBPSQL struct {
 	logger.ILogger
 	db *sqlx.DB
 }
 
 func NewAuthServicesDB(db *sqlx.DB, log logger.ILogger) IDB {
-	return &authServicesDBPSQL{
+	return &DBPSQL{
 		log,
 		db,
 	}
 }
 
-func (d *authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
+func (d *DBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 	r := make([]models.Review, 0)
 
 	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
@@ -39,7 +39,7 @@ func (d *authServicesDBPSQL) GetReviewsByProductID(pid int) ([]models.Review, er
 	return r, nil
 }
 
-func (d *authServicesDBPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
+func (d *DBPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	var r models.Review
 
 	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
@@ -55,7 +55,7 @@ func (d *authServicesDBPSQL) GetReviewByID(reviewID int) (*models.Review, error)
 	return &r, nil
 }
 
-func (d *authServicesDBPSQL) GetProductById(productId int) (*models.Product, error) {
+func (d *DBPSQL) GetProductById(productId int) (*models.Product, error) {
 	var p models.Product
 
 	stmt := `select id, title, description, year, release_date, studio, rating, created_at, updated_at from products where id = $1 limit 1`
@@ -71,7 +71,7 @@ func (d *authServicesDBPSQL) GetProductById(productId int) (*models.Product, err
 	return &p, nil
 }
 
-func (d *authServicesDBPSQL) GetProductScoreById(productId int) (*models.Score, error) {
+func (d *DBPSQL) GetProductScoreById(productId int) (*models.Score, error) {
 	var s models.Score
 
 	stmt := `select round(AVG(r.score)) as score from reviews r join products_review pr on r.id = pr.review_id where pr.product_id = $1`
@@ -83,7 +83,7 @@ func (d *authServicesDBPSQL) GetProductScoreById(productId int) (*models.Score, 
 	return &s, nil
 }
 
-func (d *authServicesDBPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
+func (d *DBPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, p.created_at, p.updated_at 
@@ -121,7 +121,7 @@ func (d *authServicesDBPSQL) GetProducts(after int, limit int, year int, genre s
 	return p, nil
 }
 
-func (d *authServicesDBPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, error) {
+func (d *DBPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, error) {
 	p := make([]models.Permission, 0)
 
 	stmt := `select permission from roles_permissions where role=(select role from users where id = $1 LIMIT 1)`
@@ -133,17 +133,17 @@ func (d *authServicesDBPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Pe
 	return p, nil
 }
 
-func (d *authServicesDBPSQL) UpdateReview(rc models.ReviewUpdate) error {
+func (d *DBPSQL) UpdateReview(rc models.ReviewUpdate) error {
 	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3 where id = $4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
 	return err
 }
 
-func (d *authServicesDBPSQL) DeleteReview(reviewID int) error {
+func (d *DBPSQL) DeleteReview(reviewID int) error {
 	_, err := d.db.Exec("delete from reviews where id = $1", reviewID)
 	return err
 }
 
-func (d *authServicesDBPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
+func (d *DBPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 	res, err := d.db.Exec("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4)", rc.Score, rc.Content, rc.ContentHTML, userID)
 	if err != nil {
 		return err
@@ -158,12 +158,12 @@ func (d *authServicesDBPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UU
 	return err
 }
 
-func (d *authServicesDBPSQL) DeleteProduct(productID int) error {
+func (d *DBPSQL) DeleteProduct(productID int) error {
 	_, err := d.db.Exec("delete from products where id = $1", productID)
 	return err
 }
 
-func (d *authServicesDBPSQL) UpdateProduct(p models.ProductUpdate) error {
+func (d *DBPSQL) UpdateProduct(p models.ProductUpdate) error {
 	_, err := d.db.Exec("update product set title = $1, description = $2, year = $3, release_date = $4, studio = $5, rating = $6 where id = $7", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating, p.ID)
 	if err != nil {
 		return err
@@ -185,7 +185,7 @@ func (d *authServicesDBPSQL) UpdateProduct(p models.ProductUpdate) error {
 	return nil
 }
 
-func (d *authServicesDBPSQL) InsertProduct(p models.ProductCreate) error {
+func (d *DBPSQL) InsertProduct(p models.ProductCreate) error {
 	res, err := d.db.Exec("insert into products(title, description, year, release_date, studio, rating) values($1, $2, $3, $4, $5, $6)", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating)
 	if err != nil {
 		return err
