@@ -58,7 +58,11 @@ func (d *DBPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 func (d *DBPSQL) GetProductById(productId int) (*models.Product, error) {
 	var p models.Product
 
-	stmt := `select id, title, description, year, release_date, studio, rating, created_at, updated_at from products where id = $1 limit 1`
+	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at from products p
+             join products_reviews pr on p.id = pr.product_id
+             join reviews on pr.review_id = r.id                                                                                                            
+             where p.id = $1 limit 1
+             group by p.id`
 
 	if err := d.db.Get(&p, stmt, productId); err != nil && err != sql.ErrNoRows {
 		return nil, err
@@ -71,24 +75,14 @@ func (d *DBPSQL) GetProductById(productId int) (*models.Product, error) {
 	return &p, nil
 }
 
-func (d *DBPSQL) GetProductScoreById(productId int) (*models.Score, error) {
-	var s models.Score
-
-	stmt := `select round(AVG(r.score)) as score from reviews r join products_review pr on r.id = pr.review_id where pr.product_id = $1`
-
-	if err := d.db.Get(&s, stmt, productId); err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
-
-	return &s, nil
-}
-
 func (d *DBPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, p.created_at, p.updated_at 
 			 from products p
-			 join products_genres pg on p.id=pg.product_id`
+			 join products_genres pg on p.id=pg.product_id
+			 join products_reviews pr on p.id = pr.product_id
+			 join reviews on pr.review_id = r.id`
 
 	where := make([]string, 0)
 
@@ -104,7 +98,7 @@ func (d *DBPSQL) GetProducts(after int, limit int, year int, genre string) ([]mo
 		stmt = stmt + " WHERE " + strings.Join(where, " AND ")
 	}
 
-	stmt += " LIMIT $1 OFFSET $2"
+	stmt += " GROUP BY p.id LIMIT $1 OFFSET $2"
 	err := d.db.Select(&p, stmt, limit, after)
 	if err != nil {
 		return nil, err

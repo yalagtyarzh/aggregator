@@ -37,15 +37,6 @@ func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
 	return *p, nil
 }
 
-func (l *UserAPILogic) GetProductScore(productId int) (models.Score, error) {
-	s, err := l.repo.DB.GetProductScoreById(productId)
-	if err != nil {
-		return models.Score{}, nil
-	}
-
-	return *s, nil
-}
-
 func (l *UserAPILogic) GetProducts(after, limit, year int, genre string) ([]models.Product, error) {
 	s, err := l.repo.DB.GetProducts(after, limit, year, genre)
 	if err != nil {

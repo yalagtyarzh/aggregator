@@ -1,4 +1,5 @@
 import React, {Component, Fragment} from "react";
+import {Link} from "react-router-dom";
 
 export default class Products extends Component {
 
@@ -6,10 +7,10 @@ export default class Products extends Component {
 
     componentDidMount() {
         this.setState({
-            movies: [
+            products: [
                 {id: 1, title: "Mock 1"},
-                {id: 1, title: "Mock 2"},
-                {id: 1, title: "Mock 3"},
+                {id: 2, title: "Mock 2"},
+                {id: 3, title: "Mock 3"},
             ]
         })
     }
@@ -22,7 +23,7 @@ export default class Products extends Component {
                 <ul>
                     {this.state.products.map((m) => (
                         <li key={m.id}>
-                            {m.title}
+                            <Link to={`/product/${m.id}`}>{m.title}</Link>
                         </li>
                     ))}
                 </ul>

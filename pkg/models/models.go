@@ -14,6 +14,7 @@ type Product struct {
 	ReleaseDate time.Time `json:"releaseDate" db:"release_date"`
 	Studio      string    `json:"studio" db:"studio"`
 	Rating      string    `json:"rating" db:"rating"`
+	Score       int       `json:"score" db:"score"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt   time.Time `json:"UpdatedAt" db:"updated_at"`
 }

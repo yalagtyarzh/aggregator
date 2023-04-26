@@ -18,7 +18,8 @@ CREATE TABLE products
     studio       TEXT               NOT NULL,
     rating       TEXT               NOT NULL REFERENCES rating (name),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
-    updated_at   TIMESTAMP          NOT NULL DEFAULT NOW()
+    updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
+    is_deleted   BOOL               NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE products_genres
@@ -54,8 +55,8 @@ CREATE TABLE users
     password   TEXT             NOT NULL,
     role       TEXT             NOT NULL REFERENCES roles (name),
     created_at TIMESTAMP        NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP        NOT NULL DEFAULT NOW()
-
+    updated_at TIMESTAMP        NOT NULL DEFAULT NOW(),
+    is_deleted BOOL             NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE reviews
@@ -64,7 +65,7 @@ CREATE TABLE reviews
     score        INTEGER            NOT NULL,
     content      TEXT               NOT NULL,
     content_html TEXT               NOT NULL,
-    user_id UUID NOT NULL REFERENCES users (id),
+    user_id      UUID               NOT NULL REFERENCES users (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     CHECK (score BETWEEN 0 AND 100)

@@ -1,8 +1,11 @@
 import React from "react";
-import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import Products from "./components/Products";
 import Home from "./components/Home";
 import Admin from "./components/Admin";
+import Genres from "./components/Genres";
+import OneProduct from "./components/OneProduct";
+
 
 export default function App() {
     return (
@@ -26,22 +29,45 @@ export default function App() {
                                         <Link to="/products">Products</Link>
                                     </li>
                                     <li className="list-group-item">
+                                        <Link to="/by-genre">Products</Link>
+                                    </li>
+                                    <li className="list-group-item">
                                         <Link to="/admin">Manage Products</Link>
                                     </li>
+                                    {/*<li className="list-group-item">*/}
+                                    {/*    <Link to="/random">Random product</Link>*/}
+                                    {/*</li>*/}
                                 </ul>
                             </nav>
                         </div>
 
                         <div className="col-md-10">
                             <Switch>
+                                <Route path="/product/:id" component={OneProduct}/>
                                 <Route path="/products">
-                                    <Products />
+                                    <Products/>
                                 </Route>
+                                <Route exact path="/by-genre">
+                                    <GenrePage/>
+                                </Route>
+
+                                <Route
+                                    exact
+                                    path="/by-genre/drama"
+                                    render={(props) => <Genres {...props} title={`Drama`}/>}
+                                />
+
+                                <Route
+                                    exact
+                                    path="/by-genre/comedy"
+                                    render={(props) => <Genres {...props} title={`Comedy`}/>}
+                                />
+
                                 <Route path="/admin">
-                                    <Admin />
+                                    <Admin/>
                                 </Route>
                                 <Route path="/">
-                                    <Home />
+                                    <Home/>
                                 </Route>
                             </Switch>
                         </div>
@@ -49,6 +75,21 @@ export default function App() {
                 </div>
             </div>
         </Router>
+    );
+}
+
+function GenrePage() {
+
+    let {path, url} = useRouteMatch();
+    return (
+        <div>
+            <h2>Genres</h2>
+
+            <ul>
+                <li><Link to={`${path}/drama`}>Drama</Link></li>
+                <li><Link to={`${url}/comedy`}>Comedy</Link></li>
+            </ul>
+        </div>
     );
 }
 
