@@ -78,6 +78,20 @@ type User struct {
 	UpdatedAt time.Time `json:"UpdatedAt" db:"updated_at"`
 }
 
+type CreateUser struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	UserName  string `json:"userName"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Role      string `json:"role"`
+}
+
+type Token struct {
+	UserID       uuid.UUID `json:"userId" db:"user_id"`
+	RefreshToken string    `json:"refreshToken" db:"refresh_token"`
+}
+
 type Score struct {
 	Score int `json:"score" db:"score"`
 }

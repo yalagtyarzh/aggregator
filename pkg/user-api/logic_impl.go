@@ -5,6 +5,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserAPILogic struct {
@@ -80,4 +81,28 @@ func (l *UserAPILogic) UpdateReview(rc models.ReviewUpdate, userID uuid.UUID) er
 	}
 
 	return l.repo.DB.UpdateReview(rc)
+}
+
+func (l *UserAPILogic) CreateUser(req models.CreateUser) error {
+	user, err := l.repo.DB.GetUserByEmail(req.Email)
+	if err != nil {
+		return err
+	}
+
+	if user != nil {
+		return errUserAlreadyCreated
+	}
+
+	hashedP, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+
+	req.Password = string(hashedP)
+	err = l.repo.DB.InsertUser(req)
+	if err == repo.ErrForeignKeyViolation {
+		return errInvalidRole
+	}
+
+	return err
 }

@@ -2,9 +2,11 @@ package repo
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"strings"
@@ -14,6 +16,12 @@ type DBPSQL struct {
 	logger.ILogger
 	db *sqlx.DB
 }
+
+const foreignKeyViolation = "23503"
+
+var (
+	ErrForeignKeyViolation = errors.New("foreign key violation error")
+)
 
 func NewDB(db *sqlx.DB, log logger.ILogger) IDB {
 	return &DBPSQL{
@@ -198,4 +206,28 @@ func (d *DBPSQL) InsertProduct(p models.ProductCreate) error {
 	}
 
 	return nil
+}
+
+func (d *DBPSQL) GetUserByEmail(email string) (*models.User, error) {
+	var u models.User
+
+	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at, is_deleted from users where email=$1", email); err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (d *DBPSQL) InsertUser(u models.CreateUser) error {
+	_, err := d.db.Exec("insert into users(first_name, last_name, user_name, email, password, role) values($1, $2, $3, $4, $5, $6)", u.FirstName, u.LastName, u.UserName, u.Email, u.Password, u.Role)
+	if driverErr, ok := err.(*pq.Error); ok {
+		if driverErr.Code == foreignKeyViolation {
+			return ErrForeignKeyViolation
+		}
+	}
+
+	return err
 }

@@ -23,11 +23,13 @@ const (
 
 // errors
 var (
-	errInvalidProductID = errors.New("invalid product id in request")
-	errNoProductID      = errors.New("no product id in request")
-	errInvalidUserID    = errors.New("invalid user id")
-	errNoPermissions    = errors.New("no permission for to do request")
-	errInvalidScore     = errors.New("invalid score")
+	errInvalidProductID   = errors.New("invalid product id in request")
+	errNoProductID        = errors.New("no product id in request")
+	errInvalidUserID      = errors.New("invalid user id")
+	errNoPermissions      = errors.New("no permission for to do request")
+	errUserAlreadyCreated = errors.New("user is already created")
+	errInvalidScore       = errors.New("invalid score")
+	errInvalidRole        = errors.New("invalid role")
 )
 
 type Handlers struct {
@@ -208,6 +210,44 @@ func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *help
 	_, _ = w.Write(b)
 
 	return nil
+}
+
+func (h *Handlers) Registration(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.registration, w, r, h.log)
+}
+
+func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	var req models.CreateUser
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&req); err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+
+	err := h.logic.CreateUser(req)
+	if err == errInvalidRole {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid role", false)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	return nil
+}
+
+func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *Handlers) Refresh(w http.ResponseWriter, r *http.Request) {
+
 }
 
 //func (h *Handlers) UserReviewsGet(w http.ResponseWriter, r *http.Request) {
