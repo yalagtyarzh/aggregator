@@ -35,18 +35,6 @@ CREATE TABLE roles
     name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE permissions
-(
-    name text NOT NULL UNIQUE
-);
-
-CREATE TABLE roles_permissions
-(
-    role       TEXT NOT NULL REFERENCES roles (name),
-    permission TEXT NOT NULL REFERENCES permissions (name),
-    UNIQUE (role, permission)
-);
-
 CREATE TABLE users
 (
     id         UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
@@ -84,10 +72,6 @@ CREATE TABLE products_reviews
 DROP TABLE reviews;
 
 DROP TABLE users;
-
-DROP TABLE roles_permissions;
-
-DROP TABLE permissions;
 
 DROP TABLE roles;
 

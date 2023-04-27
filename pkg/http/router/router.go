@@ -17,7 +17,7 @@ func Router(mw *middleware.Middleware, apis ...IAPI) http.Handler {
 
 	//initPprof(root)
 
-	root.Use(mw.RecoverMiddleware, mw.PrometheusMiddleware, mw.ReqIDMiddleware)
+	root.Use(mw.RecoverMiddleware, mw.PrometheusMiddleware, mw.ReqIDMiddleware, mw.EnableCORS)
 
 	for _, v := range apis {
 		v.Router(root, mw)

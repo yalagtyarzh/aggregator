@@ -25,13 +25,11 @@ func NewUserAPIService(repositoryPool *repo.UserAPIRepository, log logger.ILogge
 func (s *UserAPIService) Router(r *mux.Router, mw *middleware.Middleware) {
 	v1 := r.PathPrefix("/api/v1").Subrouter()
 	reviews := r.PathPrefix("/reviews").Subrouter()
-	v1.HandleFunc("/reviews/get", s.handlers.ReviewsGet).Methods("GET")
-
-	reviews.HandleFunc("/reviews/create", s.handlers.ReviewsCreate).Methods("POST")
-	reviews.HandleFunc("/reviews/update", s.handlers.ReviewsUpdate).Methods("POST")
+	reviews.HandleFunc("/create", s.handlers.ReviewsCreate).Methods("POST")
+	reviews.HandleFunc("/update", s.handlers.ReviewsUpdate).Methods("POST")
 	reviews.Use(mw.AuthMiddleware)
 
-	v1.HandleFunc("/products/score/get", s.handlers.ProductsScoreGet).Methods("GET")
+	v1.HandleFunc("/reviews/get", s.handlers.ReviewsGet).Methods("GET")
 	v1.HandleFunc("/products", s.handlers.ProductsGetMany).Methods("GET")
 	v1.HandleFunc("/products/get", s.handlers.ProductsGet).Methods("GET")
 }

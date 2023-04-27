@@ -158,7 +158,7 @@ func (d *DBPSQL) DeleteProduct(productID int) error {
 }
 
 func (d *DBPSQL) UpdateProduct(p models.ProductUpdate) error {
-	_, err := d.db.Exec("update product set title = $1, description = $2, year = $3, release_date = $4, studio = $5, rating = $6 where id = $7", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating, p.ID)
+	_, err := d.db.Exec("update products set title = $1, description = $2, year = $3, release_date = $4, studio = $5, rating = $6 where id = $7", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating, p.ID)
 	if err != nil {
 		return err
 	}

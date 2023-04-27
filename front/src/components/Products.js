@@ -3,16 +3,17 @@ import {Link} from "react-router-dom";
 
 export default class Products extends Component {
 
-    state = {products: []};
+    state = {products: [], isLoaded: false};
 
     componentDidMount() {
-        this.setState({
-            products: [
-                {id: 1, title: "Mock 1"},
-                {id: 2, title: "Mock 2"},
-                {id: 3, title: "Mock 3"},
-            ]
-        })
+        fetch("http://user-api/api/v1/products")
+            .then((response) => response.json())
+            .then((json) => {
+                this.setState({
+                    products: json,
+                    isLoaded: true
+                })
+            })
     }
 
     render() {
