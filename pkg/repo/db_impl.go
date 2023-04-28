@@ -212,10 +212,10 @@ func (d *dbPSQL) InsertProduct(p models.ProductCreate) error {
 	return nil
 }
 
-func (d *dbPSQL) GetUserByEmail(email string) (*models.User, error) {
+func (d *dbPSQL) GetUserByUsername(username string) (*models.User, error) {
 	var u models.User
 
-	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at, is_deleted from users where email=$1", email); err != nil {
+	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at, is_deleted from users where user_name=$1", username); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

@@ -88,7 +88,12 @@ type CreateUser struct {
 	Role      string `json:"role"`
 }
 
-type CreateUserResponse struct {
+type LoginRequest struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
+type UserResponse struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	UserID       string `json:"userId"`

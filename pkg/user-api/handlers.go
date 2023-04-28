@@ -31,6 +31,7 @@ var (
 	errUserAlreadyCreated = errors.New("user is already created")
 	errInvalidScore       = errors.New("invalid score")
 	errInvalidRole        = errors.New("invalid role")
+	errInvalidPassword    = errors.New("invalid password")
 )
 
 type Handlers struct {
@@ -286,7 +287,52 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 }
 
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.login, w, r, h.log)
+}
 
+func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	if len(username) == 0 {
+		return helpers.NewError(http.StatusBadRequest, nil, "no username", false)
+	}
+
+	if len(password) <= 3 {
+		return helpers.NewError(http.StatusBadRequest, nil, "too short password", false)
+	}
+
+	if len(password) > 32 {
+		return helpers.NewError(http.StatusBadRequest, nil, "too long password", false)
+	}
+
+	resp, err := h.logic.Login(username, password)
+	if err == errInvalidPassword {
+		return helpers.NewError(http.StatusBadRequest, nil, "invalid password", false)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	c := http.Cookie{
+		Name:     "refreshToken",
+		Value:    resp.RefreshToken,
+		MaxAge:   int((30 * 24 * time.Hour).Milliseconds()),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, &c)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
 }
 
 func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {

@@ -17,7 +17,7 @@ type IDB interface {
 	DeleteProduct(productID int) error
 	UpdateProduct(p models.ProductUpdate) error
 	InsertProduct(p models.ProductCreate) error
-	GetUserByEmail(email string) (*models.User, error)
+	GetUserByUsername(username string) (*models.User, error)
 	InsertUser(u models.CreateUser) (uuid.UUID, error)
 	InsertToken(userId uuid.UUID, refreshToken string) error
 	GetToken(userId uuid.UUID) (*models.Token, error)
