@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	cfg := config.GetUserAPIConfig()
+	cfg := config.GetAdminAPIConfig()
 	log := logger.NewLogger(cfg.Basic.AppName, cfg.Logger)
 
-	appProvider := provider.NewUserAPIProvider(cfg, log)
-	appRepositories := repo.NewUserAPIRepoPool(appProvider, log)
+	appProvider := provider.NewAdminAPIProvider(cfg, log)
+	appRepositories := repo.NewAdminAPIRepoPool(appProvider, log)
 
 	var appServices []common.IService
 	mainAPIService := api.NewAdminAPIService(appRepositories, log)

@@ -26,10 +26,10 @@ func NewError(code int, err error, errMsg string, isBusinessError bool) *AppErro
 		return err
 	}
 
-	if err != nil {
+	if err == nil {
 		return &AppError{
 			Err: &Err{
-				Code:            http.StatusInternalServerError,
+				Code:            code,
 				Message:         strings.ReplaceAll(errMsg, `"`, `\"`),
 				IsBusinessError: false,
 				Error:           errNoErrorInfo,
@@ -56,7 +56,7 @@ type SuperHandler func(w http.ResponseWriter, r *http.Request) *AppError
 func CallHandler(h SuperHandler, w http.ResponseWriter, r *http.Request, log logger.ILogger) {
 	if err := h(w, r); err != nil {
 		log.Errorf("X-Request-Id: %s, %s %s: %s", r.Header.Get(middleware.RequestIdHeader), r.URL.Path, r.Method, err.Error())
-		w.Header().Set("Content-Type", "text/plain")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(err.Err.Code)
 		b, _ := json.Marshal(err)
 		_, _ = w.Write(b)

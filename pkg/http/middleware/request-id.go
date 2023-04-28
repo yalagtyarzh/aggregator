@@ -13,9 +13,9 @@ func (m *Middleware) ReqIDMiddleware(h http.Handler) http.Handler {
 
 		if _, err := uuid.Parse(requestId); err != nil {
 			UUID, _ := uuid.NewRandom()
-			w.Header().Set(RequestIdHeader, UUID.String())
+			r.Header.Set(RequestIdHeader, UUID.String())
 		} else {
-			w.Header().Set(RequestIdHeader, requestId)
+			r.Header.Set(RequestIdHeader, requestId)
 		}
 
 		h.ServeHTTP(w, r)

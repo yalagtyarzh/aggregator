@@ -18,5 +18,8 @@ type IDB interface {
 	UpdateProduct(p models.ProductUpdate) error
 	InsertProduct(p models.ProductCreate) error
 	GetUserByEmail(email string) (*models.User, error)
-	InsertUser(u models.CreateUser) error
+	InsertUser(u models.CreateUser) (uuid.UUID, error)
+	InsertToken(userId uuid.UUID, refreshToken string) error
+	GetToken(userId uuid.UUID) (*models.Token, error)
+	UpdateToken(userId uuid.UUID, refreshToken string) error
 }

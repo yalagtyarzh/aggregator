@@ -1,14 +1,24 @@
 package repo
 
 import (
+	"github.com/yalagtyarzh/aggregator/pkg/config"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/provider"
 )
 
 type UserAPIRepository struct {
-	DB IDB
+	DB  IDB
+	JWT config.JWTConfig
 }
 
 func NewUserAPIRepoPool(p *provider.UserAPIProvider, l logger.ILogger) *UserAPIRepository {
-	return &UserAPIRepository{DB: NewDB(p.DB(), l)}
+	return &UserAPIRepository{DB: NewDB(p.DB(), l), JWT: p.JWT()}
+}
+
+type AdminAPIRepository struct {
+	DB IDB
+}
+
+func NewAdminAPIRepoPool(p *provider.AdminAPIProvider, l logger.ILogger) *AdminAPIRepository {
+	return &AdminAPIRepository{DB: NewDB(p.DB(), l)}
 }

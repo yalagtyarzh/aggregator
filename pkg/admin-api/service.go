@@ -13,8 +13,8 @@ type AdminAPIService struct {
 	handlers *Handlers
 }
 
-func NewAdminAPIService(repositoryPool *repo.UserAPIRepository, log logger.ILogger) *AdminAPIService {
-	logic := NewUserAPILogic(repositoryPool, log)
+func NewAdminAPIService(repositoryPool *repo.AdminAPIRepository, log logger.ILogger) *AdminAPIService {
+	logic := NewAdminAPILogic(repositoryPool, log)
 	return &AdminAPIService{
 		log:      log,
 		logic:    logic,

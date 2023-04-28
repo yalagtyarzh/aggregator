@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -87,6 +88,13 @@ type CreateUser struct {
 	Role      string `json:"role"`
 }
 
+type CreateUserResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	UserID       string `json:"userId"`
+	Email        string `json:"email"`
+}
+
 type Token struct {
 	UserID       uuid.UUID `json:"userId" db:"user_id"`
 	RefreshToken string    `json:"refreshToken" db:"refresh_token"`
@@ -102,4 +110,10 @@ type Genre struct {
 
 type Permission struct {
 	Permission string `json:"permission" db:"permission"`
+}
+
+type TokenPayload struct {
+	UserID uuid.UUID `json:"userId"`
+	Email  string    `json:"email"`
+	jwt.StandardClaims
 }

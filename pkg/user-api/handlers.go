@@ -8,6 +8,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"net/http"
+	"net/mail"
 	"strconv"
 	"time"
 )
@@ -224,16 +225,62 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.CreateUser(req)
+	if len(req.FirstName) == 0 {
+		return helpers.NewError(http.StatusBadRequest, nil, "no firstname", false)
+	}
+
+	if len(req.LastName) == 0 {
+		return helpers.NewError(http.StatusBadRequest, nil, "no lastname", false)
+	}
+
+	if len(req.UserName) == 0 {
+		return helpers.NewError(http.StatusBadRequest, nil, "no username", false)
+	}
+
+	if len(req.Password) <= 3 {
+		return helpers.NewError(http.StatusBadRequest, nil, "too short password", false)
+	}
+
+	if len(req.Password) > 32 {
+		return helpers.NewError(http.StatusBadRequest, nil, "too long password", false)
+	}
+
+	e, err := mail.ParseAddress(req.Email)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid mail", false)
+	}
+
+	req.Email = e.Address
+
+	resp, err := h.logic.CreateUser(req)
 	if err == errInvalidRole {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid role", false)
+	}
+
+	if err == errUserAlreadyCreated {
+		return helpers.NewError(http.StatusBadRequest, err, "user already created", true)
 	}
 
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
 
+	b, err := json.Marshal(resp)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	c := http.Cookie{
+		Name:     "refreshToken",
+		Value:    resp.RefreshToken,
+		MaxAge:   int((30 * 24 * time.Hour).Milliseconds()),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, &c)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }

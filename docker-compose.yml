@@ -60,7 +60,7 @@ services:
       SERVER_PROBE_BIND: ":9091"
       LOG_PRETTY: true
     ports:
-      - "127.0.0.1:80:9000"
+      - "127.0.0.1:81:9000"
     networks:
       - backend
     depends_on:

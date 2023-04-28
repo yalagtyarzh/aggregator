@@ -21,7 +21,7 @@ type ILogger interface {
 
 type LogConfig struct {
 	Level    string `env:"LOG_LEVEL" envDefault:"debug"`
-	IsPretty bool   `env:"LOG_PRETTY" envDefault:""`
+	IsPretty bool   `env:"LOG_PRETTY" envDefault:"false"`
 }
 
 type _Logger struct {

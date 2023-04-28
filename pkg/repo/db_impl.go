@@ -12,25 +12,29 @@ import (
 	"strings"
 )
 
-type DBPSQL struct {
+type dbPSQL struct {
 	logger.ILogger
 	db *sqlx.DB
 }
 
-const foreignKeyViolation = "23503"
+const (
+	foreignKeyViolation = "23503"
+	uniqueKeyViolation  = "23505"
+)
 
 var (
 	ErrForeignKeyViolation = errors.New("foreign key violation error")
+	ErrUniqueViolation     = errors.New("unique violation error")
 )
 
 func NewDB(db *sqlx.DB, log logger.ILogger) IDB {
-	return &DBPSQL{
+	return &dbPSQL{
 		log,
 		db,
 	}
 }
 
-func (d *DBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
+func (d *dbPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 	r := make([]models.Review, 0)
 
 	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
@@ -47,7 +51,7 @@ func (d *DBPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 	return r, nil
 }
 
-func (d *DBPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
+func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	var r models.Review
 
 	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
@@ -63,7 +67,7 @@ func (d *DBPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	return &r, nil
 }
 
-func (d *DBPSQL) GetProductById(productId int) (*models.Product, error) {
+func (d *dbPSQL) GetProductById(productId int) (*models.Product, error) {
 	var p models.Product
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at from products p
@@ -83,7 +87,7 @@ func (d *DBPSQL) GetProductById(productId int) (*models.Product, error) {
 	return &p, nil
 }
 
-func (d *DBPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
+func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, p.created_at, p.updated_at 
@@ -123,7 +127,7 @@ func (d *DBPSQL) GetProducts(after int, limit int, year int, genre string) ([]mo
 	return p, nil
 }
 
-func (d *DBPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, error) {
+func (d *dbPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, error) {
 	p := make([]models.Permission, 0)
 
 	stmt := `select permission from roles_permissions where role=(select role from users where id = $1 LIMIT 1)`
@@ -135,17 +139,17 @@ func (d *DBPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, er
 	return p, nil
 }
 
-func (d *DBPSQL) UpdateReview(rc models.ReviewUpdate) error {
+func (d *dbPSQL) UpdateReview(rc models.ReviewUpdate) error {
 	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3 where id = $4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
 	return err
 }
 
-func (d *DBPSQL) DeleteReview(reviewID int) error {
+func (d *dbPSQL) DeleteReview(reviewID int) error {
 	_, err := d.db.Exec("delete from reviews where id = $1", reviewID)
 	return err
 }
 
-func (d *DBPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
+func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 	res, err := d.db.Exec("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4)", rc.Score, rc.Content, rc.ContentHTML, userID)
 	if err != nil {
 		return err
@@ -160,12 +164,12 @@ func (d *DBPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 	return err
 }
 
-func (d *DBPSQL) DeleteProduct(productID int) error {
+func (d *dbPSQL) DeleteProduct(productID int) error {
 	_, err := d.db.Exec("delete from products where id = $1", productID)
 	return err
 }
 
-func (d *DBPSQL) UpdateProduct(p models.ProductUpdate) error {
+func (d *dbPSQL) UpdateProduct(p models.ProductUpdate) error {
 	_, err := d.db.Exec("update products set title = $1, description = $2, year = $3, release_date = $4, studio = $5, rating = $6 where id = $7", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating, p.ID)
 	if err != nil {
 		return err
@@ -187,7 +191,7 @@ func (d *DBPSQL) UpdateProduct(p models.ProductUpdate) error {
 	return nil
 }
 
-func (d *DBPSQL) InsertProduct(p models.ProductCreate) error {
+func (d *dbPSQL) InsertProduct(p models.ProductCreate) error {
 	res, err := d.db.Exec("insert into products(title, description, year, release_date, studio, rating) values($1, $2, $3, $4, $5, $6)", p.Title, p.Description, p.Year, p.ReleaseDate, p.Studio, p.Rating)
 	if err != nil {
 		return err
@@ -208,11 +212,11 @@ func (d *DBPSQL) InsertProduct(p models.ProductCreate) error {
 	return nil
 }
 
-func (d *DBPSQL) GetUserByEmail(email string) (*models.User, error) {
+func (d *dbPSQL) GetUserByEmail(email string) (*models.User, error) {
 	var u models.User
 
 	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at, is_deleted from users where email=$1", email); err != nil {
-		if err != sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			return nil, nil
 		}
 		return nil, err
@@ -221,13 +225,51 @@ func (d *DBPSQL) GetUserByEmail(email string) (*models.User, error) {
 	return &u, nil
 }
 
-func (d *DBPSQL) InsertUser(u models.CreateUser) error {
-	_, err := d.db.Exec("insert into users(first_name, last_name, user_name, email, password, role) values($1, $2, $3, $4, $5, $6)", u.FirstName, u.LastName, u.UserName, u.Email, u.Password, u.Role)
+func (d *dbPSQL) InsertUser(u models.CreateUser) (uuid.UUID, error) {
+	var userID uuid.UUID
+
+	err := d.db.Get(&userID, "insert into users(first_name, last_name, user_name, email, password, role) values($1, $2, $3, $4, $5, $6) RETURNING id", u.FirstName, u.LastName, u.UserName, u.Email, u.Password, u.Role)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
-			return ErrForeignKeyViolation
+			return uuid.UUID{}, ErrForeignKeyViolation
+		}
+
+		if driverErr.Code == uniqueKeyViolation {
+			return uuid.UUID{}, ErrUniqueViolation
 		}
 	}
 
+	return userID, err
+}
+
+func (d *dbPSQL) InsertToken(userId uuid.UUID, refreshToken string) error {
+	_, err := d.db.Exec("insert into users_tokens(user_id, refresh_token) VALUES($1, $2)", userId, refreshToken)
+	if driverErr, ok := err.(*pq.Error); ok {
+		if driverErr.Code == uniqueKeyViolation {
+			return ErrUniqueViolation
+		}
+	}
 	return err
+}
+
+func (d *dbPSQL) UpdateToken(userId uuid.UUID, refreshToken string) error {
+	_, err := d.db.Exec("UPDATE users_tokens SET refresh_token=$1 WHERE user_id=$2", refreshToken, userId)
+	if driverErr, ok := err.(*pq.Error); ok {
+		if driverErr.Code == uniqueKeyViolation {
+			return ErrUniqueViolation
+		}
+	}
+	return err
+}
+
+func (d *dbPSQL) GetToken(userId uuid.UUID) (*models.Token, error) {
+	var res models.Token
+	if err := d.db.Get(&res, "select user_id, refresh_token from users_tokens where user_id=$1 limit 1", userId); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &res, nil
 }

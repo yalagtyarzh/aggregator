@@ -9,3 +9,5 @@ type IAdminAPILogic interface {
 	CreateProduct(userID uuid.UUID, req models.ProductCreate) error
 	UpdateProduct(userID uuid.UUID, req models.ProductUpdate) error
 }
+
+const CRUDProduct = "CRUDProduct"

@@ -67,7 +67,15 @@ CREATE TABLE products_reviews
     review_id  INTEGER NOT NULL REFERENCES reviews (id)
 );
 
+CREATE TABLE users_tokens
+(
+    user_id       UUID NOT NULL REFERENCES users (id) UNIQUE,
+    refresh_token TEXT NOT NULL
+);
+
 -- +migrate Down
+
+DROP TABLE users_tokens;
 
 DROP TABLE reviews;
 

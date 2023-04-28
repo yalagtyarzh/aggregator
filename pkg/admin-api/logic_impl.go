@@ -9,10 +9,15 @@ import (
 
 type AdminAPILogic struct {
 	log  logger.ILogger
-	repo *repo.UserAPIRepository
+	repo *repo.AdminAPIRepository
 }
 
-const CRUDProduct = "CRUDProduct"
+func NewAdminAPILogic(repositoryPool *repo.AdminAPIRepository, log logger.ILogger) IAdminAPILogic {
+	return &AdminAPILogic{
+		log:  log,
+		repo: repositoryPool,
+	}
+}
 
 func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate) error {
 	perms, err := l.repo.DB.GetPermissionsByRole(userID)
@@ -37,13 +42,6 @@ func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate
 	}
 
 	return l.repo.DB.UpdateProduct(req)
-}
-
-func NewUserAPILogic(repositoryPool *repo.UserAPIRepository, log logger.ILogger) IAdminAPILogic {
-	return &AdminAPILogic{
-		log:  log,
-		repo: repositoryPool,
-	}
 }
 
 func (l *AdminAPILogic) CreateProduct(userID uuid.UUID, req models.ProductCreate) error {
