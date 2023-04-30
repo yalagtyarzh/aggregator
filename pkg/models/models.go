@@ -44,7 +44,10 @@ type Review struct {
 	Score       int       `json:"score" db:"score"`
 	Content     string    `json:"content" db:"content"`
 	ContentHTML string    `json:"contentHTML" db:"content_html"`
-	User        User      `json:"user"`
+	UserID      uuid.UUID `json:"userId" db:"user_id"`
+	FirstName   string    `json:"firstName" db:"first_name"`
+	LastName    string    `json:"lastName" db:"last_name"`
+	UserName    string    `json:"userName" db:"user_name"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt   time.Time `json:"UpdatedAt" db:"updated_at"`
 }

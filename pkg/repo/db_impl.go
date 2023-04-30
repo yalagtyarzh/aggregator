@@ -37,7 +37,7 @@ func NewDB(db *sqlx.DB, log logger.ILogger) IDB {
 func (d *dbPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 	r := make([]models.Review, 0)
 
-	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
+	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
 			 join products_reviews pr on r.id = pr.review_id
 			 join users u on r.user_id = u.id
@@ -56,7 +56,7 @@ func (d *dbPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 func (d *dbPSQL) GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*models.Review, error) {
 	var r models.Review
 
-	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
+	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
 			 join users u on r.user_id = u.id
 			 join products_reviews pr on r.id = pr.review_id
@@ -76,7 +76,7 @@ func (d *dbPSQL) GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*mo
 func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	var r models.Review
 
-	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
+	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
 			 join users u on r.user_id = u.id
 			 where r.id = $1 LIMIT 1
