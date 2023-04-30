@@ -24,7 +24,7 @@ type ProductCreate struct {
 	Title       string    `json:"title" db:"title" validate:"required"`
 	Description string    `json:"description" db:"description" validate:"required"`
 	Year        int       `json:"year" db:"year" validate:"required"`
-	Genres      []Genre   `json:"genres" validate:"required,mt=0"`
+	Genres      []Genre   `json:"genres" validate:"required,min=1"`
 	ReleaseDate time.Time `json:"releaseDate" db:"release_date" validate:"required"`
 	Studio      string    `json:"studio" db:"studio" validate:"required"`
 	Rating      string    `json:"rating" db:"rating" validate:"required"`
@@ -35,7 +35,7 @@ type ProductUpdate struct {
 	Title       string    `json:"title" db:"title" validate:"required"`
 	Description string    `json:"description" db:"description" validate:"required"`
 	Year        int       `json:"year" db:"year" validate:"required"`
-	Genres      []Genre   `json:"genres" validate:"required,mt=0"`
+	Genres      []Genre   `json:"genres" validate:"required,min=1"`
 	ReleaseDate time.Time `json:"releaseDate" db:"release_date" validate:"required"`
 	Studio      string    `json:"studio" db:"studio" validate:"required"`
 	Rating      string    `json:"rating" db:"rating" validate:"required"`
@@ -82,13 +82,13 @@ type User struct {
 type CreateUser struct {
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName" validate:"required"`
-	UserName  string `json:"userName" validate:"required,mte=3"`
+	UserName  string `json:"userName" validate:"required,min=3"`
 	Email     string `json:"email" validate:"required,email"`
-	Password  string `json:"password" validate:"required,mte=3,lte=32"`
+	Password  string `json:"password" validate:"required,min=3,max=32"`
 }
 
 type LoginRequest struct {
-	Username string `json:"userName" validate:"required,mte=3,lte=32"`
+	Username string `json:"userName" validate:"required,min=3,max=32"`
 	Password string `json:"password" validate:"required"`
 }
 
