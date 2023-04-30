@@ -10,16 +10,15 @@ CREATE TABLE genres
 
 CREATE TABLE products
 (
-    id           SERIAL PRIMARY KEY NOT NULL,
-    title        TEXT               NOT NULL,
-    description  TEXT               NOT NULL,
-    year         INTEGER            NOT NULL,
-    release_date TIMESTAMP          NOT NULL,
-    studio       TEXT               NOT NULL,
-    rating       TEXT               NOT NULL REFERENCES rating (name),
-    created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
-    updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
-    is_deleted   BOOL               NOT NULL DEFAULT FALSE
+    id          SERIAL PRIMARY KEY NOT NULL,
+    title       TEXT               NOT NULL,
+    description TEXT               NOT NULL,
+    year        INTEGER            NOT NULL,
+    studio      TEXT               NOT NULL,
+    rating      TEXT               NOT NULL REFERENCES rating (name),
+    created_at  TIMESTAMP          NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMP          NOT NULL DEFAULT NOW(),
+    is_deleted  BOOL               NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE products_genres
@@ -56,6 +55,7 @@ CREATE TABLE reviews
     user_id      UUID               NOT NULL REFERENCES users (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
+    is_deleted   bool               NOT NULL DEFAULT FALSE,
     CHECK (score BETWEEN 0 AND 100)
 );
 
@@ -89,4 +89,5 @@ VALUES ('Comedy'),
        ('Adventure');
 
 INSERT INTO users (first_name, last_name, user_name, email, password, role)
-VALUES ('Admin', 'Admin', 'Admin', 'Admin@mail.ru', '$2y$04$HrTlSzyJmpQ.gLzf3Y4wneYnd3Q./uGNcHy6mA2CCYEOmKeMxk1Zq', 'Admin')
+VALUES ('Admin', 'Admin', 'Admin', 'Admin@mail.ru', '$2y$04$HrTlSzyJmpQ.gLzf3Y4wneYnd3Q./uGNcHy6mA2CCYEOmKeMxk1Zq',
+        'Admin')

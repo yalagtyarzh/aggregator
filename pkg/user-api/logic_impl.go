@@ -49,21 +49,43 @@ func (l *UserAPILogic) GetProducts(after, limit, year int, genre string) ([]mode
 }
 
 func (l *UserAPILogic) CreateReview(rc models.ReviewCreate, userID uuid.UUID) error {
+	u, err := l.repo.DB.GetUserByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		return errors.ErrNoUser
+	}
+
+	r, err := l.repo.DB.GetReviewByUserAndProduct(rc.ProductID, userID)
+	if err != nil {
+		return err
+	}
+
+	if r != nil {
+		return errors.ErrTooManyReviews
+	}
+
 	return l.repo.DB.InsertReview(rc, userID)
 }
 
 func (l *UserAPILogic) UpdateReview(rc models.ReviewUpdate, userID uuid.UUID) error {
+	u, err := l.repo.DB.GetUserByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if u == nil {
+		return errors.ErrNoUser
+	}
+
 	r, err := l.repo.DB.GetReviewByID(rc.ID)
 	if err != nil {
 		return err
 	}
 
 	if r.User.ID.String() != userID.String() {
-		u, err := l.repo.DB.GetUserByID(userID)
-		if err != nil {
-			return err
-		}
-
 		if u.Role != "Moderator" && u.Role != "Admin" {
 			return errors.ErrNoPermissions
 		}

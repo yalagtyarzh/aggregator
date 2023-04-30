@@ -40,12 +40,12 @@ func (h *Handlers) ReviewsGet(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) reviewsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
 	productId := r.URL.Query().Get(productId)
 	if productId == "" {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", false)
 	}
 
 	pid, err := strconv.Atoi(productId)
 	if err != nil || pid < 1 {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", false)
 	}
 
 	resp, err := h.logic.GetReviews(pid)
@@ -88,6 +88,14 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 	}
 
 	err = h.logic.CreateReview(req, token.UserID)
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "no user", true)
+	}
+
+	if err == errors.ErrTooManyReviews {
+		return helpers.NewError(http.StatusBadRequest, err, "too many reviews for one user", true)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -124,6 +132,10 @@ func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusForbidden, err, "no permissions", true)
 	}
 
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "no user", true)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -140,12 +152,12 @@ func (h *Handlers) ProductsGet(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) productsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
 	productId := r.URL.Query().Get(productId)
 	if productId == "" {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", false)
 	}
 
 	pid, err := strconv.Atoi(productId)
 	if err != nil || pid < 1 {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", false)
 	}
 
 	resp, err := h.logic.GetProduct(pid)
@@ -180,11 +192,9 @@ func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *help
 		limit = 100
 	}
 
-	year, _ := strconv.Atoi(year)
-
-	now := time.Now().Year()
-	if year > now {
-		year = now
+	year, err := strconv.Atoi(year)
+	if err != nil {
+		year = 0
 	}
 
 	genre := r.URL.Query().Get(genre)

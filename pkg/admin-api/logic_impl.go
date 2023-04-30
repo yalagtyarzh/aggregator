@@ -26,6 +26,10 @@ func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate
 		return err
 	}
 
+	if u == nil {
+		return errors.ErrNoUser
+	}
+
 	if u.Role != "Admin" {
 		return errors.ErrNoPermissions
 	}
@@ -41,6 +45,10 @@ func (l *AdminAPILogic) CreateProduct(userID uuid.UUID, req models.ProductCreate
 	u, err := l.repo.DB.GetUserByID(userID)
 	if err != nil {
 		return err
+	}
+
+	if u == nil {
+		return errors.ErrNoUser
 	}
 
 	if u.Role != "Admin" {

@@ -12,7 +12,6 @@ type Product struct {
 	Description string    `json:"description" db:"description"`
 	Year        int       `json:"year" db:"year"`
 	Genres      []Genre   `json:"genres"`
-	ReleaseDate time.Time `json:"releaseDate" db:"release_date"`
 	Studio      string    `json:"studio" db:"studio"`
 	Rating      string    `json:"rating" db:"rating"`
 	Score       int       `json:"score" db:"score"`
@@ -21,25 +20,23 @@ type Product struct {
 }
 
 type ProductCreate struct {
-	Title       string    `json:"title" db:"title" validate:"required"`
-	Description string    `json:"description" db:"description" validate:"required"`
-	Year        int       `json:"year" db:"year" validate:"required"`
-	Genres      []Genre   `json:"genres" validate:"required,min=1"`
-	ReleaseDate time.Time `json:"releaseDate" db:"release_date" validate:"required"`
-	Studio      string    `json:"studio" db:"studio" validate:"required"`
-	Rating      string    `json:"rating" db:"rating" validate:"required"`
+	Title       string  `json:"title" db:"title" validate:"required"`
+	Description string  `json:"description" db:"description" validate:"required"`
+	Year        int     `json:"year" db:"year" validate:"required"`
+	Genres      []Genre `json:"genres" validate:"required,min=1"`
+	Studio      string  `json:"studio" db:"studio" validate:"required"`
+	Rating      string  `json:"rating" db:"rating" validate:"required"`
 }
 
 type ProductUpdate struct {
-	ID          int       `json:"id" db:"id" validate:"required"`
-	Title       string    `json:"title" db:"title" validate:"required"`
-	Description string    `json:"description" db:"description" validate:"required"`
-	Year        int       `json:"year" db:"year" validate:"required"`
-	Genres      []Genre   `json:"genres" validate:"required,min=1"`
-	ReleaseDate time.Time `json:"releaseDate" db:"release_date" validate:"required"`
-	Studio      string    `json:"studio" db:"studio" validate:"required"`
-	Rating      string    `json:"rating" db:"rating" validate:"required"`
-	Delete      bool      `json:"delete"`
+	ID          int     `json:"id" db:"id" validate:"required"`
+	Title       string  `json:"title" db:"title" validate:"required"`
+	Description string  `json:"description" db:"description" validate:"required"`
+	Year        int     `json:"year" db:"year" validate:"required"`
+	Genres      []Genre `json:"genres" validate:"required,min=1"`
+	Studio      string  `json:"studio" db:"studio" validate:"required"`
+	Rating      string  `json:"rating" db:"rating" validate:"required"`
+	Delete      bool    `json:"delete"`
 }
 
 type Review struct {

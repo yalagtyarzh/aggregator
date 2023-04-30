@@ -16,7 +16,6 @@ CREATE TABLE products
     title        TEXT               NOT NULL,
     description  TEXT               NOT NULL,
     year         INTEGER            NOT NULL,
-    release_date TIMESTAMP          NOT NULL,
     studio       TEXT               NOT NULL,
     rating       TEXT               NOT NULL REFERENCES rating (name),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
@@ -58,6 +57,7 @@ CREATE TABLE reviews
     user_id      UUID               NOT NULL REFERENCES users (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
+    is_deleted   bool               NOT NULL DEFAULT FALSE,
     CHECK (score BETWEEN 0 AND 100)
 );
 

@@ -43,6 +43,14 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 	}
 
 	err = h.logic.CreateProduct(token.UserID, req)
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "user not found", false)
+	}
+
+	if err == errors.ErrNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", false)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -74,6 +82,14 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 	}
 
 	err = h.logic.UpdateProduct(token.UserID, req)
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "user not found", false)
+	}
+
+	if err == errors.ErrNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", false)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
