@@ -7,6 +7,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
+	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"net/http"
 )
 
@@ -44,11 +45,15 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 
 	err = h.logic.CreateProduct(token.UserID, req)
 	if err == errors.ErrNoUser {
-		return helpers.NewError(http.StatusBadRequest, err, "user not found", false)
+		return helpers.NewError(http.StatusBadRequest, err, "user not found", true)
 	}
 
 	if err == errors.ErrNoPermissions {
-		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", false)
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", true)
+	}
+
+	if err == repo.ErrForeignKeyViolation {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid rating or genre", true)
 	}
 
 	if err != nil {
@@ -83,11 +88,15 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 
 	err = h.logic.UpdateProduct(token.UserID, req)
 	if err == errors.ErrNoUser {
-		return helpers.NewError(http.StatusBadRequest, err, "user not found", false)
+		return helpers.NewError(http.StatusBadRequest, err, "user not found", true)
 	}
 
 	if err == errors.ErrNoPermissions {
-		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", false)
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", true)
+	}
+
+	if err == repo.ErrForeignKeyViolation {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid rating or genre", true)
 	}
 
 	if err != nil {

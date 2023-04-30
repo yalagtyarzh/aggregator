@@ -225,6 +225,9 @@ func (d *dbPSQL) UpdateProduct(p models.ProductUpdate) error {
 	}
 
 	_, err = tx.Exec("delete from products_genres where product_id = $1", p.ID)
+	if err != nil {
+		return err
+	}
 
 	if p.Genres == nil || len(p.Genres) == 0 {
 		return nil
