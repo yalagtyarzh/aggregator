@@ -167,18 +167,14 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 		}()
 	}()
 
-	res, err := tx.Exec("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4)", rc.Score, rc.Content, rc.ContentHTML, userID)
+	var reviewID int
+	err = tx.QueryRow("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4) returning id", rc.Score, rc.Content, rc.ContentHTML, userID).Scan(&reviewID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
 		}
 	}
 
-	if err != nil {
-		return err
-	}
-
-	reviewID, err := res.LastInsertId()
 	if err != nil {
 		return err
 	}
@@ -261,17 +257,13 @@ func (d *dbPSQL) InsertProduct(p models.ProductCreate) error {
 		}()
 	}()
 
-	res, err := d.db.Exec("insert into products(title, description, year, studio, rating) values($1, $2, $3, $4, $5)", p.Title, p.Description, p.Year, p.Studio, p.Rating)
+	var productID int
+	err = d.db.QueryRow("insert into products(title, description, year, studio, rating) values($1, $2, $3, $4, $5) returning id", p.Title, p.Description, p.Year, p.Studio, p.Rating).Scan(productID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
 		}
 	}
-	if err != nil {
-		return err
-	}
-
-	productID, err := res.LastInsertId()
 	if err != nil {
 		return err
 	}
