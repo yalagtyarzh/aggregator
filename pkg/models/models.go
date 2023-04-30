@@ -83,12 +83,12 @@ type CreateUser struct {
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName" validate:"required"`
 	UserName  string `json:"userName" validate:"required,mte=3"`
-	Email     string `json:"email" validate:"required"`
-	Password  string `json:"password" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required,mte=3,lte=32"`
 }
 
 type LoginRequest struct {
-	Username string `json:"userName" validate:"required,mte=3"`
+	Username string `json:"userName" validate:"required,mte=3,lte=32"`
 	Password string `json:"password" validate:"required"`
 }
 

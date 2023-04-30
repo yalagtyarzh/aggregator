@@ -9,7 +9,6 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"net/http"
-	"net/mail"
 	"strconv"
 	"time"
 )
@@ -83,11 +82,12 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	if req.Score > 100 || req.Score < 0 {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidScore, "invalid score", true)
+	err := h.validator.Struct(req)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.CreateReview(req, token.UserID)
+	err = h.logic.CreateReview(req, token.UserID)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -114,11 +114,12 @@ func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	if req.Score > 100 || req.Score < 0 {
-		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidScore, "invalid score", true)
+	err := h.validator.Struct(req)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.UpdateReview(req, token.UserID)
+	err = h.logic.UpdateReview(req, token.UserID)
 	if err == errors.ErrNoPermissions {
 		return helpers.NewError(http.StatusForbidden, err, "no permissions", true)
 	}
@@ -217,32 +218,10 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	if len(req.FirstName) == 0 {
-		return helpers.NewError(http.StatusBadRequest, nil, "no firstname", false)
-	}
-
-	if len(req.LastName) == 0 {
-		return helpers.NewError(http.StatusBadRequest, nil, "no lastname", false)
-	}
-
-	if len(req.UserName) == 0 {
-		return helpers.NewError(http.StatusBadRequest, nil, "no username", false)
-	}
-
-	if len(req.Password) <= 3 {
-		return helpers.NewError(http.StatusBadRequest, nil, "too short password", false)
-	}
-
-	if len(req.Password) > 32 {
-		return helpers.NewError(http.StatusBadRequest, nil, "too long password", false)
-	}
-
-	e, err := mail.ParseAddress(req.Email)
+	err := h.validator.Struct(req)
 	if err != nil {
-		return helpers.NewError(http.StatusBadRequest, err, "invalid mail", false)
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
-
-	req.Email = e.Address
 
 	resp, err := h.logic.CreateUser(req)
 	if err == errors.ErrInvalidRole {
@@ -288,16 +267,10 @@ func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppErr
 	if err := d.Decode(&req); err != nil {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
-	if len(req.Username) == 0 {
-		return helpers.NewError(http.StatusBadRequest, nil, "no username", false)
-	}
 
-	if len(req.Password) <= 3 {
-		return helpers.NewError(http.StatusBadRequest, nil, "too short password", false)
-	}
-
-	if len(req.Password) > 32 {
-		return helpers.NewError(http.StatusBadRequest, nil, "too long password", false)
+	err := h.validator.Struct(req)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
 	resp, err := h.logic.Login(req.Username, req.Password)

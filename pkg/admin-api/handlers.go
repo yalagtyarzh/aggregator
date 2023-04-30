@@ -37,7 +37,12 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.CreateProduct(token.UserID, req)
+	err := h.validator.Struct(req)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+
+	err = h.logic.CreateProduct(token.UserID, req)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -63,7 +68,12 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.UpdateProduct(token.UserID, req)
+	err := h.validator.Struct(req)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+
+	err = h.logic.UpdateProduct(token.UserID, req)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
