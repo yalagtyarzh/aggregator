@@ -85,6 +85,10 @@ func (l *UserAPILogic) UpdateReview(rc models.ReviewUpdate, userID uuid.UUID) er
 		return err
 	}
 
+	if r == nil {
+		return errors.ErrNoReview
+	}
+
 	if r.User.ID.String() != userID.String() {
 		if u.Role != "Moderator" && u.Role != "Admin" {
 			return errors.ErrNoPermissions

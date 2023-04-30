@@ -81,12 +81,14 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.validator.Struct(req)
-	if err != nil {
-		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	if !req.Delete {
+		err := h.validator.Struct(req)
+		if err != nil {
+			return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+		}
 	}
 
-	err = h.logic.UpdateProduct(token.UserID, req)
+	err := h.logic.UpdateProduct(token.UserID, req)
 	if err == errors.ErrNoUser {
 		return helpers.NewError(http.StatusBadRequest, err, "user not found", true)
 	}

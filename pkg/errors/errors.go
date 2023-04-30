@@ -13,4 +13,5 @@ var (
 	ErrNoUser             = errors.New("no user")
 	ErrNoToken            = errors.New("token not found")
 	ErrTooManyReviews     = errors.New("too many reviews for user")
+	ErrNoReview           = errors.New("review not found")
 )

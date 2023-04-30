@@ -96,6 +96,10 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "too many reviews for one user", true)
 	}
 
+	if err == repo.ErrForeignKeyViolation {
+		return helpers.NewError(http.StatusBadRequest, err, "product not found", true)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -122,18 +126,24 @@ func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.validator.Struct(req)
-	if err != nil {
-		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	if !req.Delete {
+		err := h.validator.Struct(req)
+		if err != nil {
+			return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+		}
 	}
 
-	err = h.logic.UpdateReview(req, token.UserID)
+	err := h.logic.UpdateReview(req, token.UserID)
 	if err == errors.ErrNoPermissions {
 		return helpers.NewError(http.StatusForbidden, err, "no permissions", true)
 	}
 
 	if err == errors.ErrNoUser {
 		return helpers.NewError(http.StatusBadRequest, err, "no user", true)
+	}
+
+	if err == errors.ErrNoReview {
+		return helpers.NewError(http.StatusBadRequest, err, "review not found", true)
 	}
 
 	if err != nil {
@@ -235,7 +245,7 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 
 	resp, err := h.logic.CreateUser(req)
 	if err == errors.ErrInvalidRole {
-		return helpers.NewError(http.StatusBadRequest, err, "invalid role", false)
+		return helpers.NewError(http.StatusBadRequest, err, "invalid role", true)
 	}
 
 	if err == errors.ErrUserAlreadyCreated {
@@ -328,10 +338,6 @@ func (h *Handlers) logout(w http.ResponseWriter, r *http.Request) *helpers.AppEr
 	}
 
 	err = h.logic.Logout(rToken.Value)
-	if err != nil {
-		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
-	}
-
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}

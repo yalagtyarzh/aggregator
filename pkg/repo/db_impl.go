@@ -76,7 +76,10 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 			 where r.id = $1 LIMIT 1
 	`
 
-	if err := d.db.Select(&r, stmt, reviewID); err != nil && err != sql.ErrNoRows {
+	if err := d.db.Select(&r, stmt, reviewID); err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 
