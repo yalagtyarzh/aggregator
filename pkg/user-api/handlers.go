@@ -171,6 +171,10 @@ func (h *Handlers) productsGet(w http.ResponseWriter, r *http.Request) *helpers.
 	}
 
 	resp, err := h.logic.GetProduct(pid)
+	if err == errors.ErrNoProduct {
+		return helpers.NewError(http.StatusNotFound, err, "product not found", true)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -202,7 +206,7 @@ func (h *Handlers) productsGetMany(w http.ResponseWriter, r *http.Request) *help
 		limit = 100
 	}
 
-	year, err := strconv.Atoi(year)
+	year, err := strconv.Atoi(r.URL.Query().Get(year))
 	if err != nil {
 		year = 0
 	}

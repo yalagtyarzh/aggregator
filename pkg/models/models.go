@@ -54,17 +54,17 @@ type Review struct {
 
 type ReviewCreate struct {
 	ProductID   int    `json:"productId" validate:"required"`
-	Score       int    `json:"score" validate:"required,mte=0,lte=100"`
+	Score       int    `json:"score" validate:"required,min=0,max=100"`
 	Content     string `json:"content" validate:"required"`
 	ContentHTML string `json:"contentHTML" validate:"required"`
 }
 
 type ReviewUpdate struct {
 	ID          int    `json:"id" validate:"required"`
-	Score       int    `json:"score" validate:"required,mte=0,lte=100"`
+	Score       int    `json:"score" validate:"required,min=0,max=100"`
 	Content     string `json:"content" validate:"required"`
 	ContentHTML string `json:"contentHTML" validate:"required"`
-	Delete      bool   `json:"bool"`
+	Delete      bool   `json:"delete"`
 }
 
 type User struct {

@@ -36,6 +36,10 @@ func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
 		return models.Product{}, nil
 	}
 
+	if p == nil {
+		return models.Product{}, errors.ErrNoProduct
+	}
+
 	return *p, nil
 }
 

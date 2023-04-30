@@ -60,10 +60,10 @@ func (d *dbPSQL) GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*mo
 			 from reviews r
 			 join users u on r.user_id = u.id
 			 join products_reviews pr on r.id = pr.review_id
-			 where u.id = $1 AND pr.product_id = $2 LIMIT 1
+			 where u.id = $1 AND pr.product_id = $2 and r.is_deleted=false LIMIT 1
 	`
 
-	if err := d.db.Select(&r, stmt, userId, productId); err != nil {
+	if err := d.db.Get(&r, stmt, userId, productId); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -82,7 +82,7 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 			 where r.id = $1 LIMIT 1
 	`
 
-	if err := d.db.Select(&r, stmt, reviewID); err != nil {
+	if err := d.db.Get(&r, stmt, reviewID); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -108,9 +108,12 @@ func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 		return nil, err
 	}
 
-	if err := d.db.Select(&p.Genres, `select genre from products_genres where product_id=$1`, productId); err != nil {
+	var g []models.Genre
+	if err := d.db.Select(&g, `select genre from products_genres where product_id=$1`, productId); err != nil {
 		return nil, err
 	}
+
+	p.Genres = g
 
 	return &p, nil
 }
@@ -131,9 +134,12 @@ func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.P
 		return nil, err
 	}
 
-	if err := d.db.Select(&p.Genres, `select genre from products_genres where product_id=$1`, productId); err != nil {
+	var g []models.Genre
+	if err := d.db.Select(&g, `select genre from products_genres where product_id=$1`, productId); err != nil {
 		return nil, err
 	}
+
+	p.Genres = g
 
 	return &p, nil
 }
@@ -142,7 +148,7 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDel
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = $1), 0) as score from products p
+			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = p.id), 0) as score from products p
 			 join products_genres pg on p.id=pg.product_id`
 
 	where := make([]string, 0)
@@ -166,11 +172,14 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDel
 	}
 
 	stmt = `select genre from products_genres where product_id=$1`
-	for _, v := range p {
-		err = d.db.Select(&v.Genres, stmt, v.ID)
+	for i, v := range p {
+		var g []models.Genre
+		err = d.db.Select(&g, stmt, v.ID)
 		if err != nil {
 			return nil, err
 		}
+
+		p[i].Genres = g
 	}
 
 	return p, nil
