@@ -21,20 +21,12 @@ func NewAdminAPILogic(repositoryPool *repo.AdminAPIRepository, log logger.ILogge
 }
 
 func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate) error {
-	perms, err := l.repo.DB.GetPermissionsByRole(userID)
+	u, err := l.repo.DB.GetUserByID(userID)
 	if err != nil {
 		return err
 	}
 
-	var flag bool
-	for _, v := range perms {
-		if v.Permission == CRUDProduct {
-			flag = true
-			break
-		}
-	}
-
-	if !flag {
+	if u.Role != "Admin" {
 		return errors.ErrNoPermissions
 	}
 
@@ -46,20 +38,12 @@ func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate
 }
 
 func (l *AdminAPILogic) CreateProduct(userID uuid.UUID, req models.ProductCreate) error {
-	perms, err := l.repo.DB.GetPermissionsByRole(userID)
+	u, err := l.repo.DB.GetUserByID(userID)
 	if err != nil {
 		return err
 	}
 
-	var flag bool
-	for _, v := range perms {
-		if v.Permission == CRUDProduct {
-			flag = true
-			break
-		}
-	}
-
-	if !flag {
+	if u.Role != "Admin" {
 		return errors.ErrNoPermissions
 	}
 

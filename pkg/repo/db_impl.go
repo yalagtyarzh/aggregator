@@ -72,9 +72,10 @@ func (d *dbPSQL) GetProductById(productId int) (*models.Product, error) {
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at from products p
              join products_reviews pr on p.id = pr.product_id
-             join reviews on pr.review_id = r.id                                                                                                            
-             where p.id = $1 limit 1
-             group by p.id`
+             join reviews r on pr.review_id = r.id                                                                                                            
+             where p.id = $1 
+             group by p.id
+             limit 1`
 
 	if err := d.db.Get(&p, stmt, productId); err != nil && err != sql.ErrNoRows {
 		return nil, err
@@ -90,11 +91,11 @@ func (d *dbPSQL) GetProductById(productId int) (*models.Product, error) {
 func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
 	p := make([]models.Product, 0)
 
-	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, p.created_at, p.updated_at 
+	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at 
 			 from products p
 			 join products_genres pg on p.id=pg.product_id
 			 join products_reviews pr on p.id = pr.product_id
-			 join reviews on pr.review_id = r.id`
+			 join reviews r on pr.review_id = r.id`
 
 	where := make([]string, 0)
 
@@ -122,18 +123,6 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string) ([]mo
 		if err != nil {
 			return nil, err
 		}
-	}
-
-	return p, nil
-}
-
-func (d *dbPSQL) GetPermissionsByRole(userID uuid.UUID) ([]models.Permission, error) {
-	p := make([]models.Permission, 0)
-
-	stmt := `select permission from roles_permissions where role=(select role from users where id = $1 LIMIT 1)`
-	err := d.db.Select(&p, stmt, userID)
-	if err != nil {
-		return nil, err
 	}
 
 	return p, nil
@@ -294,7 +283,7 @@ func (d *dbPSQL) DeleteToken(token string) error {
 
 func (d *dbPSQL) FindToken(token string) (*models.Token, error) {
 	var res models.Token
-	if err := d.db.Get(&res, "select user_id, refresh_token from users_tokens where user_id=refresh_token1 limit 1", token); err != nil {
+	if err := d.db.Get(&res, "select user_id, refresh_token from users_tokens where user_id=$1 limit 1", token); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

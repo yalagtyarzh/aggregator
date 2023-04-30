@@ -16,5 +16,3 @@ type IUserAPILogic interface {
 	Logout(token string) error
 	Refresh(token string) (models.UserResponse, error)
 }
-
-const editForeignReviews = "editForeignReviews"

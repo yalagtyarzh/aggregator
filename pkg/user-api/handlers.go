@@ -280,21 +280,25 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-	if len(username) == 0 {
+	var req models.LoginRequest
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&req); err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+	if len(req.Username) == 0 {
 		return helpers.NewError(http.StatusBadRequest, nil, "no username", false)
 	}
 
-	if len(password) <= 3 {
+	if len(req.Password) <= 3 {
 		return helpers.NewError(http.StatusBadRequest, nil, "too short password", false)
 	}
 
-	if len(password) > 32 {
+	if len(req.Password) > 32 {
 		return helpers.NewError(http.StatusBadRequest, nil, "too long password", false)
 	}
 
-	resp, err := h.logic.Login(username, password)
+	resp, err := h.logic.Login(req.Username, req.Password)
 	if err == errors.ErrInvalidPassword {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid password", true)
 	}

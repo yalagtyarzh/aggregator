@@ -59,20 +59,12 @@ func (l *UserAPILogic) UpdateReview(rc models.ReviewUpdate, userID uuid.UUID) er
 	}
 
 	if r.User.ID.String() != userID.String() {
-		perms, err := l.repo.DB.GetPermissionsByRole(userID)
+		u, err := l.repo.DB.GetUserByID(userID)
 		if err != nil {
 			return err
 		}
 
-		var flag bool
-		for _, v := range perms {
-			if v.Permission == editForeignReviews {
-				flag = true
-				break
-			}
-		}
-
-		if !flag {
+		if u.Role != "Moderator" && u.Role != "Admin" {
 			return errors.ErrNoPermissions
 		}
 	}

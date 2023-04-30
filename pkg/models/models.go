@@ -89,7 +89,7 @@ type CreateUser struct {
 }
 
 type LoginRequest struct {
-	UserName string `json:"userName"`
+	Username string `json:"userName"`
 	Password string `json:"password"`
 }
 
@@ -111,10 +111,6 @@ type Score struct {
 
 type Genre struct {
 	Genre string `json:"genre" db:"genre"`
-}
-
-type Permission struct {
-	Permission string `json:"permission" db:"permission"`
 }
 
 type TokenPayload struct {

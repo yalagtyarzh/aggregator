@@ -70,3 +70,23 @@ CREATE TABLE users_tokens
     user_id       UUID NOT NULL REFERENCES users (id) UNIQUE,
     refresh_token TEXT NOT NULL
 );
+
+INSERT INTO roles (name)
+VALUES ('Registered'),
+       ('Moderator'),
+       ('Admin');
+
+INSERT INTO rating (name)
+VALUES ('G'),
+       ('PG'),
+       ('PG-13'),
+       ('R'),
+       ('NC-17');
+
+INSERT INTO genres (name)
+VALUES ('Comedy'),
+       ('Drama'),
+       ('Adventure');
+
+INSERT INTO users (first_name, last_name, user_name, email, password, role)
+VALUES ('Admin', 'Admin', 'Admin', 'Admin@mail.ru', '$2y$04$HrTlSzyJmpQ.gLzf3Y4wneYnd3Q./uGNcHy6mA2CCYEOmKeMxk1Zq', 'Admin')
