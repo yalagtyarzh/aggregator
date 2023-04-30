@@ -230,7 +230,7 @@ func (d *dbPSQL) GetUserByID(id uuid.UUID) (*models.User, error) {
 func (d *dbPSQL) InsertUser(u models.CreateUser) (uuid.UUID, error) {
 	var userID uuid.UUID
 
-	err := d.db.Get(&userID, "insert into users(first_name, last_name, user_name, email, password, role) values($1, $2, $3, $4, $5, $6) RETURNING id", u.FirstName, u.LastName, u.UserName, u.Email, u.Password, u.Role)
+	err := d.db.Get(&userID, "insert into users(first_name, last_name, user_name, email, password, role) values($1, $2, $3, $4, $5, 'Registered') RETURNING id", u.FirstName, u.LastName, u.UserName, u.Email, u.Password)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return uuid.UUID{}, ErrForeignKeyViolation
