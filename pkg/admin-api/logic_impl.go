@@ -34,6 +34,15 @@ func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate
 		return errors.ErrNoPermissions
 	}
 
+	p, err := l.repo.DB.GetProduct(req.ID)
+	if err != nil {
+		return err
+	}
+
+	if p == nil {
+		return errors.ErrNoProduct
+	}
+
 	if req.Delete {
 		return l.repo.DB.DeleteProduct(req.ID)
 	}

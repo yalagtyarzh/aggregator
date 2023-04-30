@@ -5,6 +5,7 @@ import "errors"
 var (
 	ErrInvalidProductID   = errors.New("invalid product id in request")
 	ErrNoProductID        = errors.New("no product id in request")
+	ErrNoProduct          = errors.New("product not found")
 	ErrInvalidUserID      = errors.New("invalid user id")
 	ErrNoPermissions      = errors.New("no permission to do request")
 	ErrUserAlreadyCreated = errors.New("user is already created")

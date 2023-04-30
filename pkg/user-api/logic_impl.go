@@ -31,7 +31,7 @@ func (l *UserAPILogic) GetReviews(productId int) ([]models.Review, error) {
 }
 
 func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
-	p, err := l.repo.DB.GetProductById(productId, false)
+	p, err := l.repo.DB.GetProductWithDeleted(productId, false)
 	if err != nil {
 		return models.Product{}, nil
 	}

@@ -101,6 +101,10 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid rating or genre", true)
 	}
 
+	if err == errors.ErrNoProduct {
+		return helpers.NewError(http.StatusBadRequest, err, "no product", true)
+	}
+
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
