@@ -2,8 +2,7 @@ package admin_api
 
 import (
 	"encoding/json"
-	"errors"
-	"github.com/google/uuid"
+	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
@@ -15,13 +14,6 @@ type Handlers struct {
 	log   logger.ILogger
 }
 
-var (
-	errInvalidProductID = errors.New("invalid product id in request")
-	errNoProductID      = errors.New("no product id in request")
-	errInvalidUserID    = errors.New("invalid user id")
-	errNoPermissions    = errors.New("no permission for to do request")
-)
-
 func NewAdminAPIHandlers(u IAdminAPILogic, l logger.ILogger) *Handlers {
 	return &Handlers{u, l}
 }
@@ -31,9 +23,9 @@ func (h *Handlers) ProductCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	actorID, ok := r.Context().Value("userID").(uuid.UUID)
+	token, ok := r.Context().Value("token").(models.TokenPayload)
 	if !ok {
-		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
 	}
 
 	var req models.ProductCreate
@@ -43,7 +35,7 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.CreateProduct(actorID, req)
+	err := h.logic.CreateProduct(token.UserID, req)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -57,9 +49,9 @@ func (h *Handlers) ProductUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	actorID, ok := r.Context().Value("userID").(uuid.UUID)
+	token, ok := r.Context().Value("token").(models.TokenPayload)
 	if !ok {
-		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
 	}
 
 	var req models.ProductUpdate
@@ -69,7 +61,7 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
-	err := h.logic.UpdateProduct(actorID, req)
+	err := h.logic.UpdateProduct(token.UserID, req)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}

@@ -57,6 +57,7 @@ type AdminAPIConfig struct {
 	Basic         BasicConfig
 	DB            DBConfig
 	ServerOptions ServerOptionsConfig
+	JWT           JWTConfig `envPrefix:"JWT_"`
 }
 
 func GetUserAPIConfig() *UserAPIConfig {

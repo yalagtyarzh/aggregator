@@ -2,6 +2,7 @@ package admin_api
 
 import (
 	"github.com/google/uuid"
+	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
@@ -34,7 +35,7 @@ func (l *AdminAPILogic) UpdateProduct(userID uuid.UUID, req models.ProductUpdate
 	}
 
 	if !flag {
-		return errNoPermissions
+		return errors.ErrNoPermissions
 	}
 
 	if req.Delete {
@@ -59,7 +60,7 @@ func (l *AdminAPILogic) CreateProduct(userID uuid.UUID, req models.ProductCreate
 	}
 
 	if !flag {
-		return errNoPermissions
+		return errors.ErrNoPermissions
 	}
 
 	return l.repo.DB.InsertProduct(req)

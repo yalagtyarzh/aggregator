@@ -20,6 +20,6 @@ func main() {
 	mainAPIService := api.NewAdminAPIService(appRepositories, log)
 	appServices = append(appServices, mainAPIService)
 
-	app := common.NewApp(cfg.Basic, cfg.ServerOptions, appProvider, log, appServices...)
+	app := common.NewApp(cfg.Basic, cfg.ServerOptions, appProvider, log, appRepositories.JWT, appServices...)
 	app.Start()
 }

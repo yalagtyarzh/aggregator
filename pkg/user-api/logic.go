@@ -13,6 +13,8 @@ type IUserAPILogic interface {
 	UpdateReview(rc models.ReviewUpdate, id uuid.UUID) error
 	CreateUser(req models.CreateUser) (models.UserResponse, error)
 	Login(username, password string) (models.UserResponse, error)
+	Logout(token string) error
+	Refresh(token string) (models.UserResponse, error)
 }
 
 const editForeignReviews = "editForeignReviews"

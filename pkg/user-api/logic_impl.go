@@ -1,13 +1,12 @@
 package user_api
 
 import (
-	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
+	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type UserAPILogic struct {
@@ -74,7 +73,7 @@ func (l *UserAPILogic) UpdateReview(rc models.ReviewUpdate, userID uuid.UUID) er
 		}
 
 		if !flag {
-			return errNoPermissions
+			return errors.ErrNoPermissions
 		}
 	}
 
@@ -94,19 +93,19 @@ func (l *UserAPILogic) CreateUser(req models.CreateUser) (models.UserResponse, e
 	req.Password = string(hashedP)
 	id, err := l.repo.DB.InsertUser(req)
 	if err == repo.ErrForeignKeyViolation {
-		return models.UserResponse{}, errInvalidRole
+		return models.UserResponse{}, errors.ErrInvalidRole
 	}
 
 	if err == repo.ErrUniqueViolation {
-		return models.UserResponse{}, errUserAlreadyCreated
+		return models.UserResponse{}, errors.ErrUserAlreadyCreated
 	}
 
-	access, refresh, err := l.generateTokens(id, req.Email)
+	access, refresh, err := l.repo.JWT.GenerateTokens(id, req.Email)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
 
-	err = l.saveToken(id, refresh)
+	err = l.repo.JWT.SaveToken(id, refresh)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
@@ -122,16 +121,20 @@ func (l *UserAPILogic) Login(username, password string) (models.UserResponse, er
 		return models.UserResponse{}, err
 	}
 
-	if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
-		return models.UserResponse{}, errInvalidPassword
+	if u == nil {
+		return models.UserResponse{}, errors.ErrNoUser
 	}
 
-	access, refresh, err := l.generateTokens(u.ID, u.Email)
+	if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+		return models.UserResponse{}, errors.ErrInvalidPassword
+	}
+
+	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Email)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
 
-	err = l.saveToken(u.ID, refresh)
+	err = l.repo.JWT.SaveToken(u.ID, refresh)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
@@ -141,50 +144,41 @@ func (l *UserAPILogic) Login(username, password string) (models.UserResponse, er
 	}, err
 }
 
-func (l *UserAPILogic) generateTokens(userId uuid.UUID, email string) (string, string, error) {
-	accessPayload := models.TokenPayload{
-		UserID: userId,
-		Email:  email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(30 * time.Minute).Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
-	}
-
-	refreshPayload := models.TokenPayload{
-		UserID: userId,
-		Email:  email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(30 * 24 * time.Hour).Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
-	}
-
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessPayload)
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshPayload)
-
-	aTokenStr, err := accessToken.SignedString([]byte(l.repo.JWT.SigningKey))
-	if err != nil {
-		return "", "", err
-	}
-
-	rTokenStr, err := refreshToken.SignedString([]byte(l.repo.JWT.SigningKey))
-	if err != nil {
-		return "", "", err
-	}
-
-	return aTokenStr, rTokenStr, nil
+func (l *UserAPILogic) Logout(token string) error {
+	return l.repo.DB.DeleteToken(token)
 }
 
-func (l *UserAPILogic) saveToken(userId uuid.UUID, refreshToken string) error {
-	t, err := l.repo.DB.GetToken(userId)
+func (l *UserAPILogic) Refresh(token string) (models.UserResponse, error) {
+	resp, err := l.repo.JWT.ValidateRefreshToken(token)
 	if err != nil {
-		return err
+		return models.UserResponse{}, err
 	}
 
-	if t != nil {
-		return l.repo.DB.UpdateToken(userId, refreshToken)
+	t, err := l.repo.DB.FindToken(token)
+	if t == nil {
+		return models.UserResponse{}, errors.ErrNoToken
 	}
 
-	return l.repo.DB.InsertToken(userId, refreshToken)
+	u, err := l.repo.DB.GetUserByID(resp.UserID)
+	if err != nil {
+		return models.UserResponse{}, err
+	}
+
+	if u == nil {
+		return models.UserResponse{}, errors.ErrNoUser
+	}
+
+	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Email)
+	if err != nil {
+		return models.UserResponse{}, err
+	}
+
+	err = l.repo.JWT.SaveToken(u.ID, refresh)
+	if err != nil {
+		return models.UserResponse{}, err
+	}
+
+	return models.UserResponse{
+		AccessToken: access, RefreshToken: refresh, UserID: u.ID.String(), Email: u.Email,
+	}, err
 }

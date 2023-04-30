@@ -18,8 +18,11 @@ type IDB interface {
 	UpdateProduct(p models.ProductUpdate) error
 	InsertProduct(p models.ProductCreate) error
 	GetUserByUsername(username string) (*models.User, error)
+	GetUserByID(id uuid.UUID) (*models.User, error)
 	InsertUser(u models.CreateUser) (uuid.UUID, error)
 	InsertToken(userId uuid.UUID, refreshToken string) error
 	GetToken(userId uuid.UUID) (*models.Token, error)
 	UpdateToken(userId uuid.UUID, refreshToken string) error
+	DeleteToken(token string) error
+	FindToken(token string) (*models.Token, error)
 }

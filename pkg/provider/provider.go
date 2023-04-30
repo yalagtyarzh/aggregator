@@ -49,6 +49,7 @@ func (p *UserAPIProvider) JWT() config.JWTConfig {
 type AdminAPIProvider struct {
 	log logger.ILogger
 	db  *sqlx.DB
+	jwt config.JWTConfig
 }
 
 func NewAdminAPIProvider(appConfig *config.AdminAPIConfig, log logger.ILogger) *AdminAPIProvider {
@@ -61,6 +62,7 @@ func NewAdminAPIProvider(appConfig *config.AdminAPIConfig, log logger.ILogger) *
 	return &AdminAPIProvider{
 		log: log,
 		db:  db,
+		jwt: appConfig.JWT,
 	}
 }
 
@@ -74,4 +76,8 @@ func (p *AdminAPIProvider) Close() {
 
 func (p *AdminAPIProvider) DB() *sqlx.DB {
 	return p.db
+}
+
+func (p *AdminAPIProvider) JWT() config.JWTConfig {
+	return p.jwt
 }

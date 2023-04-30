@@ -2,11 +2,11 @@ package user_api
 
 import (
 	"encoding/json"
-	"errors"
-	"github.com/google/uuid"
+	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
+	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"net/http"
 	"net/mail"
 	"strconv"
@@ -15,23 +15,12 @@ import (
 
 // query params
 const (
-	productId = "pid"
-	after     = "after"
-	limit     = "limit"
-	year      = "year"
-	genre     = "genre"
-)
-
-// errors
-var (
-	errInvalidProductID   = errors.New("invalid product id in request")
-	errNoProductID        = errors.New("no product id in request")
-	errInvalidUserID      = errors.New("invalid user id")
-	errNoPermissions      = errors.New("no permission for to do request")
-	errUserAlreadyCreated = errors.New("user is already created")
-	errInvalidScore       = errors.New("invalid score")
-	errInvalidRole        = errors.New("invalid role")
-	errInvalidPassword    = errors.New("invalid password")
+	productId    = "pid"
+	after        = "after"
+	limit        = "limit"
+	year         = "year"
+	genre        = "genre"
+	refreshToken = "refreshToken"
 )
 
 type Handlers struct {
@@ -50,12 +39,12 @@ func (h *Handlers) ReviewsGet(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) reviewsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
 	productId := r.URL.Query().Get(productId)
 	if productId == "" {
-		return helpers.NewError(http.StatusBadRequest, errNoProductID, "no product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", true)
 	}
 
 	pid, err := strconv.Atoi(productId)
 	if err != nil || pid < 1 {
-		return helpers.NewError(http.StatusBadRequest, errInvalidProductID, "invalid product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", true)
 	}
 
 	resp, err := h.logic.GetReviews(pid)
@@ -80,9 +69,9 @@ func (h *Handlers) ReviewsCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	actorID, ok := r.Context().Value("userID").(uuid.UUID)
+	token, ok := r.Context().Value("token").(models.TokenPayload)
 	if !ok {
-		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
 	}
 
 	var req models.ReviewCreate
@@ -93,10 +82,10 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 	}
 
 	if req.Score > 100 || req.Score < 0 {
-		return helpers.NewError(http.StatusBadRequest, errInvalidScore, "invalid score", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidScore, "invalid score", true)
 	}
 
-	err := h.logic.CreateReview(req, actorID)
+	err := h.logic.CreateReview(req, token.UserID)
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
@@ -111,9 +100,9 @@ func (h *Handlers) ReviewsUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-	actorID, ok := r.Context().Value("userID").(uuid.UUID)
+	token, ok := r.Context().Value("token").(models.TokenPayload)
 	if !ok {
-		return helpers.NewError(http.StatusInternalServerError, errInvalidUserID, "internal server error", false)
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
 	}
 
 	var req models.ReviewUpdate
@@ -124,11 +113,11 @@ func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helper
 	}
 
 	if req.Score > 100 || req.Score < 0 {
-		return helpers.NewError(http.StatusBadRequest, errInvalidScore, "invalid score", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidScore, "invalid score", true)
 	}
 
-	err := h.logic.UpdateReview(req, actorID)
-	if err == errNoPermissions {
+	err := h.logic.UpdateReview(req, token.UserID)
+	if err == errors.ErrNoPermissions {
 		return helpers.NewError(http.StatusForbidden, err, "no permissions", true)
 	}
 
@@ -148,12 +137,12 @@ func (h *Handlers) ProductsGet(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) productsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
 	productId := r.URL.Query().Get(productId)
 	if productId == "" {
-		return helpers.NewError(http.StatusBadRequest, errNoProductID, "no product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrNoProductID, "no product id in request", true)
 	}
 
 	pid, err := strconv.Atoi(productId)
 	if err != nil || pid < 1 {
-		return helpers.NewError(http.StatusBadRequest, errInvalidProductID, "invalid product id in request", true)
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidProductID, "invalid product id in request", true)
 	}
 
 	resp, err := h.logic.GetProduct(pid)
@@ -254,11 +243,11 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 	req.Email = e.Address
 
 	resp, err := h.logic.CreateUser(req)
-	if err == errInvalidRole {
+	if err == errors.ErrInvalidRole {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid role", false)
 	}
 
-	if err == errUserAlreadyCreated {
+	if err == errors.ErrUserAlreadyCreated {
 		return helpers.NewError(http.StatusBadRequest, err, "user already created", true)
 	}
 
@@ -272,7 +261,7 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 	}
 
 	c := http.Cookie{
-		Name:     "refreshToken",
+		Name:     refreshToken,
 		Value:    resp.RefreshToken,
 		MaxAge:   int((30 * 24 * time.Hour).Milliseconds()),
 		HttpOnly: true,
@@ -306,8 +295,12 @@ func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppErr
 	}
 
 	resp, err := h.logic.Login(username, password)
-	if err == errInvalidPassword {
-		return helpers.NewError(http.StatusBadRequest, nil, "invalid password", false)
+	if err == errors.ErrInvalidPassword {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid password", true)
+	}
+
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "user not found", true)
 	}
 
 	if err != nil {
@@ -321,7 +314,7 @@ func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppErr
 	}
 
 	c := http.Cookie{
-		Name:     "refreshToken",
+		Name:     refreshToken,
 		Value:    resp.RefreshToken,
 		MaxAge:   int((30 * 24 * time.Hour).Milliseconds()),
 		HttpOnly: true,
@@ -336,17 +329,89 @@ func (h *Handlers) login(w http.ResponseWriter, r *http.Request) *helpers.AppErr
 }
 
 func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.logout, w, r, h.log)
+}
 
+func (h *Handlers) logout(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	rToken, err := r.Cookie(refreshToken)
+	if err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "already logout", false)
+	}
+
+	err = h.logic.Logout(rToken.Value)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	c := http.Cookie{
+		Name:     refreshToken,
+		Value:    "",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, &c)
+	w.WriteHeader(http.StatusOK)
+
+	return nil
 }
 
 func (h *Handlers) Refresh(w http.ResponseWriter, r *http.Request) {
-
+	helpers.CallHandler(h.refresh, w, r, h.log)
 }
 
-//func (h *Handlers) UserReviewsGet(w http.ResponseWriter, r *http.Request) {
-//	helpers.CallHandler(h.userReviewsGet, w, r, h.log)
-//}
-//
-//func (h *Handlers) userReviewsGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
-//	return nil
-//}
+func (h *Handlers) refresh(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	rToken, err := r.Cookie(refreshToken)
+	if err != nil || rToken.Value == "" {
+		return helpers.NewError(http.StatusUnauthorized, err, "no token", false)
+	}
+
+	resp, err := h.logic.Refresh(rToken.Value)
+	if err == repo.ErrInvalidTokenSignature {
+		return helpers.NewError(http.StatusUnauthorized, err, "invalid token signature", true)
+	}
+
+	if err == repo.ErrValidate {
+		return helpers.NewError(http.StatusBadRequest, err, "error validating token", true)
+	}
+
+	if err == repo.ErrInvalidToken {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid Token", true)
+	}
+
+	if err == errors.ErrNoToken {
+		return helpers.NewError(http.StatusUnauthorized, err, "token not found", true)
+	}
+
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusUnauthorized, err, "user not found", true)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	c := http.Cookie{
+		Name:     refreshToken,
+		Value:    resp.RefreshToken,
+		MaxAge:   int((30 * 24 * time.Hour).Milliseconds()),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, &c)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
+}

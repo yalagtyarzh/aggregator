@@ -215,7 +215,20 @@ func (d *dbPSQL) InsertProduct(p models.ProductCreate) error {
 func (d *dbPSQL) GetUserByUsername(username string) (*models.User, error) {
 	var u models.User
 
-	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at, is_deleted from users where user_name=$1", username); err != nil {
+	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at from users where user_name=$1", username); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (d *dbPSQL) GetUserByID(id uuid.UUID) (*models.User, error) {
+	var u models.User
+
+	if err := d.db.Get(&u, "select id, first_name, last_name, user_name, email, password, role, created_at, updated_at from users where id=$1", id); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -265,6 +278,23 @@ func (d *dbPSQL) UpdateToken(userId uuid.UUID, refreshToken string) error {
 func (d *dbPSQL) GetToken(userId uuid.UUID) (*models.Token, error) {
 	var res models.Token
 	if err := d.db.Get(&res, "select user_id, refresh_token from users_tokens where user_id=$1 limit 1", userId); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (d *dbPSQL) DeleteToken(token string) error {
+	_, err := d.db.Exec("delete from users_tokens where refresh_token=$1", token)
+	return err
+}
+
+func (d *dbPSQL) FindToken(token string) (*models.Token, error) {
+	var res models.Token
+	if err := d.db.Get(&res, "select user_id, refresh_token from users_tokens where user_id=refresh_token1 limit 1", token); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

@@ -8,6 +8,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/prometheus"
 	"github.com/yalagtyarzh/aggregator/pkg/provider"
+	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"net/http"
 	"os"
 	"os/signal"
@@ -25,10 +26,10 @@ type Application struct {
 }
 
 func NewApp(basic config.BasicConfig, serverOptions config.ServerOptionsConfig, appProvider provider.IProvider,
-	appLogger logger.ILogger, services ...IService) *Application {
+	appLogger logger.ILogger, jwt *repo.JWTer, services ...IService) *Application {
 
 	appPrometheus := prometheus.New(basic.Namespace, basic.PrometheusPrefix, basic.AppName)
-	appMiddleware := middleware.New(appLogger, appPrometheus)
+	appMiddleware := middleware.New(appLogger, appPrometheus, jwt)
 	metrics := router.Metrics()
 	probes := router.Probe()
 	handler := router.Router(appMiddleware, getApis(services)...)
