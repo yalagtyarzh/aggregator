@@ -11,19 +11,19 @@ func (m *Middleware) AuthMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 		if header == "" {
-			responsecodes.Write401("unauthorized", w)
+			responsecodes.Write401("no header", w)
 			return
 		}
 
 		splitted := strings.Split(header, " ")
 		if len(splitted) != 2 {
-			responsecodes.Write401("unauthorized", w)
+			responsecodes.Write401("invalid header", w)
 			return
 		}
 
 		payload, err := m.appJWT.ValidateAccessToken(splitted[1])
 		if err != nil {
-			responsecodes.Write401("unauthorized", w)
+			responsecodes.Write401("invalid validation", w)
 			return
 		}
 

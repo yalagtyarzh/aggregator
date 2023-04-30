@@ -2,6 +2,7 @@ package user_api
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
@@ -24,12 +25,13 @@ const (
 )
 
 type Handlers struct {
-	logic IUserAPILogic
-	log   logger.ILogger
+	logic     IUserAPILogic
+	log       logger.ILogger
+	validator *validator.Validate
 }
 
 func NewUserAPIHandlers(u IUserAPILogic, l logger.ILogger) *Handlers {
-	return &Handlers{u, l}
+	return &Handlers{u, l, validator.New()}
 }
 
 func (h *Handlers) ReviewsGet(w http.ResponseWriter, r *http.Request) {

@@ -2,6 +2,7 @@ package admin_api
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
@@ -10,12 +11,13 @@ import (
 )
 
 type Handlers struct {
-	logic IAdminAPILogic
-	log   logger.ILogger
+	logic     IAdminAPILogic
+	log       logger.ILogger
+	validator *validator.Validate
 }
 
 func NewAdminAPIHandlers(u IAdminAPILogic, l logger.ILogger) *Handlers {
-	return &Handlers{u, l}
+	return &Handlers{u, l, validator.New()}
 }
 
 func (h *Handlers) ProductCreate(w http.ResponseWriter, r *http.Request) {

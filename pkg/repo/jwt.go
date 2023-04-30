@@ -86,16 +86,15 @@ func (l *JWTer) ValidateRefreshToken(token string) (models.TokenPayload, error) 
 func (l *JWTer) ValidateToken(token, signingKey string) (models.TokenPayload, error) {
 	claims := models.TokenPayload{}
 
-	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return signingKey, nil
+	tkn, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(l.cfg.SigningKey), nil
 	})
 
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
 			return models.TokenPayload{}, ErrInvalidTokenSignature
 		}
-		return models.TokenPayload{}, ErrValidate
-
+		return models.TokenPayload{}, err
 	}
 
 	if !tkn.Valid {
