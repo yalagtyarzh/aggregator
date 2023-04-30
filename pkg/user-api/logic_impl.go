@@ -31,7 +31,7 @@ func (l *UserAPILogic) GetReviews(productId int) ([]models.Review, error) {
 }
 
 func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
-	p, err := l.repo.DB.GetProductById(productId)
+	p, err := l.repo.DB.GetProductById(productId, false)
 	if err != nil {
 		return models.Product{}, nil
 	}
@@ -40,7 +40,7 @@ func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
 }
 
 func (l *UserAPILogic) GetProducts(after, limit, year int, genre string) ([]models.Product, error) {
-	s, err := l.repo.DB.GetProducts(after, limit, year, genre)
+	s, err := l.repo.DB.GetProducts(after, limit, year, genre, false)
 	if err != nil {
 		return []models.Product{}, err
 	}

@@ -8,8 +8,8 @@ import (
 type IDB interface {
 	GetReviewsByProductID(productId int) ([]models.Review, error)
 	GetReviewByID(reviewID int) (*models.Review, error)
-	GetProductById(productId int) (*models.Product, error)
-	GetProducts(after int, limit int, year int, genre string) ([]models.Product, error)
+	GetProductById(productId int, isDeleted bool) (*models.Product, error)
+	GetProducts(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error)
 	UpdateReview(rc models.ReviewUpdate) error
 	DeleteReview(reviewID int) error
 	InsertReview(rc models.ReviewCreate, userID uuid.UUID) error

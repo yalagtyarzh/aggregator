@@ -57,7 +57,7 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	stmt := `select r.id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id, u.first_name, u.last_name, u.user_name, u.email, u.password, u.role, u.created_at, u.updated_at
 			 from reviews r
 			 join users u on r.user_id = u.id
-			 where r.id = $1 LIMIT 1
+			 where r.id = $1 AND is_deleted=$2 LIMIT 1
 	`
 
 	if err := d.db.Select(&r, stmt, reviewID); err != nil && err != sql.ErrNoRows {
@@ -67,17 +67,17 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 	return &r, nil
 }
 
-func (d *dbPSQL) GetProductById(productId int) (*models.Product, error) {
+func (d *dbPSQL) GetProductById(productId int, isDeleted bool) (*models.Product, error) {
 	var p models.Product
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at from products p
              join products_reviews pr on p.id = pr.product_id
              join reviews r on pr.review_id = r.id                                                                                                            
-             where p.id = $1 
+             where p.id = $1 and is_deleted=$2
              group by p.id
              limit 1`
 
-	if err := d.db.Get(&p, stmt, productId); err != nil && err != sql.ErrNoRows {
+	if err := d.db.Get(&p, stmt, productId, isDeleted); err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
 
@@ -88,7 +88,7 @@ func (d *dbPSQL) GetProductById(productId int) (*models.Product, error) {
 	return &p, nil
 }
 
-func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string) ([]models.Product, error) {
+func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error) {
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.release_date, p.studio, p.rating, round(avg(r.score)), p.created_at, p.updated_at 
@@ -107,9 +107,9 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string) ([]mo
 		where = append(where, fmt.Sprintf("pg.genre = '%s'", genre))
 	}
 
-	if len(where) < 0 {
-		stmt = stmt + " WHERE " + strings.Join(where, " AND ")
-	}
+	where = append(where, fmt.Sprintf("is_deleted = %t", isDeleted))
+
+	stmt = stmt + " WHERE " + strings.Join(where, " AND ")
 
 	stmt += " GROUP BY p.id LIMIT $1 OFFSET $2"
 	err := d.db.Select(&p, stmt, limit, after)
@@ -154,7 +154,7 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 }
 
 func (d *dbPSQL) DeleteProduct(productID int) error {
-	_, err := d.db.Exec("delete from products where id = $1", productID)
+	_, err := d.db.Exec("update products set is_deleted=true where id = $1", productID)
 	return err
 }
 
