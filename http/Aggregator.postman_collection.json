@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "b3061359-1575-480f-bb7f-d5a7015fa1f8",
+		"name": "Aggregator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"firstName\",\r\n    \"lastName\": \"lastName\",\r\n    \"userName\": \"test\",\r\n    \"email\": \"test@a.ru\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/registration",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\": \"Admin\",\r\n    \"password\": \"Admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/login",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/logout",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetReviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/reviews/get?pid=1",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"get"
+							],
+							"query": [
+								{
+									"key": "pid",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetProducts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/products?after=0&limit=100&year=2011&genre=Drama",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products"
+							],
+							"query": [
+								{
+									"key": "after",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								},
+								{
+									"key": "year",
+									"value": "2011"
+								},
+								{
+									"key": "genre",
+									"value": "Drama"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetProduct",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/products/get?pid=2",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"get"
+							],
+							"query": [
+								{
+									"key": "pid",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReviewCreate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4ZjM5My1mNzMyLTRlYjctODhkMi0zZjY5NjIxNjQ2ZTkiLCJlbWFpbCI6InRlc3RAd2IucnUiLCJleHAiOjE2ODI4NzkzNDgsImlhdCI6MTY4Mjg3NzU0OH0.LJO583wwoFHjFwE40LA0rTBTqrsp1rfPkBTC636DkqM",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\": 2,\r\n    \"score\": 33,\r\n    \"content\": \"a\",\r\n    \"contentHTML\": \"a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/reviews/create",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReviewUpdate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4ZjM5My1mNzMyLTRlYjctODhkMi0zZjY5NjIxNjQ2ZTkiLCJlbWFpbCI6InRlc3RAd2IucnUiLCJleHAiOjE2ODI4NzkyODQsImlhdCI6MTY4Mjg3NzQ4NH0.vKPj-eutnjNvuIJYv3AWo__KVP-LqiYC9r0ZWYhPUm4",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 5,\r\n    \"score\": 99,\r\n    \"content\": \"a\",\r\n    \"contentHTML\": \"a\",\r\n    \"delete\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/reviews/update",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reviews",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "ProductCreate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGVhZDY2ZS04NGIyLTQzMWMtOWNmOC02NDAzMDUzNGU0MjciLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJleHAiOjE2ODI4NzU5OTAsImlhdCI6MTY4Mjg3NDE5MH0.8bpOWHuXsKRyQkcFURm3iUxexWoAs1smA6ndhkX3nB8",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"title\",\r\n    \"description\": \"description\",\r\n    \"genres\": [\r\n        {\"genre\": \"Comedy\"}\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{admin_url}}/api/v1/admin/product/create",
+							"protocol": "http",
+							"host": [
+								"{{admin_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ProductUpdate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGVhZDY2ZS04NGIyLTQzMWMtOWNmOC02NDAzMDUzNGU0MjciLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJleHAiOjE2ODI4NzU5OTAsImlhdCI6MTY4Mjg3NDE5MH0.8bpOWHuXsKRyQkcFURm3iUxexWoAs1smA6ndhkX3nB8",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"title\": \"titl\",\r\n    \"description\": \"description\",\r\n    \"genres\": [\r\n        {\"genre\": \"Drama\"}, {\"genre\": \"Comedy\"}\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"delete\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{admin_url}}/api/v1/admin/product/update",
+							"protocol": "http",
+							"host": [
+								"{{admin_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"product",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_url",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "admin_url",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
