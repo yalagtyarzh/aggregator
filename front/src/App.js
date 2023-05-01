@@ -1,10 +1,12 @@
 import React from "react";
-import {BrowserRouter as Router, Link, Route, Switch, useRouteMatch} from "react-router-dom";
+import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
 import Products from "./components/Products";
 import Home from "./components/Home";
 import Admin from "./components/Admin";
 import Genres from "./components/Genres";
 import OneProduct from "./components/OneProduct";
+import OneGenre from "./components/OneGenre";
+import EditProduct from "./components/EditProduct";
 
 
 export default function App() {
@@ -32,6 +34,9 @@ export default function App() {
                                         <Link to="/genres">Genres</Link>
                                     </li>
                                     <li className="list-group-item">
+                                        <Link to="/admin/add">Add Product</Link>
+                                    </li>
+                                    <li className="list-group-item">
                                         <Link to="/admin">Manage Products</Link>
                                     </li>
                                 </ul>
@@ -44,9 +49,12 @@ export default function App() {
                                 <Route path="/products">
                                     <Products/>
                                 </Route>
+
+                                <Route path="/genre/:id" component={OneGenre}/>
                                 <Route exact path="/genres">
                                     <Genres/>
                                 </Route>
+                                <Route path="/admin/add" component={EditProduct}/>
                                 <Route path="/admin">
                                     <Admin/>
                                 </Route>
