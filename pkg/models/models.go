@@ -80,8 +80,8 @@ type User struct {
 }
 
 type CreateUser struct {
-	FirstName string `json:"firstName" validate:"required"`
-	LastName  string `json:"lastName" validate:"required"`
+	FirstName string `json:"firstName" validate:"required,min=2"`
+	LastName  string `json:"lastName" validate:"required,min=2"`
 	UserName  string `json:"userName" validate:"required,min=3"`
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required,min=3,max=32"`

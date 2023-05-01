@@ -10,6 +10,7 @@ import (
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -242,6 +243,8 @@ func (h *Handlers) registration(w http.ResponseWriter, r *http.Request) *helpers
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
 	}
 
+	req.Email, req.Password, req.UserName, req.FirstName, req.LastName = strings.TrimSpace(req.Email),
+		strings.TrimSpace(req.Password), strings.TrimSpace(req.UserName), strings.TrimSpace(req.FirstName), strings.TrimSpace(req.LastName)
 	err := h.validator.Struct(req)
 	if err != nil {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
