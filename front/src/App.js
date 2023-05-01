@@ -29,14 +29,11 @@ export default function App() {
                                         <Link to="/products">Products</Link>
                                     </li>
                                     <li className="list-group-item">
-                                        <Link to="/by-genre">Products</Link>
+                                        <Link to="/by-genre">Genres</Link>
                                     </li>
                                     <li className="list-group-item">
                                         <Link to="/admin">Manage Products</Link>
                                     </li>
-                                    {/*<li className="list-group-item">*/}
-                                    {/*    <Link to="/random">Random product</Link>*/}
-                                    {/*</li>*/}
                                 </ul>
                             </nav>
                         </div>
