@@ -122,7 +122,7 @@ func (l *UserAPILogic) CreateUser(req models.CreateUser) (models.UserResponse, e
 		return models.UserResponse{}, errors.ErrUserAlreadyCreated
 	}
 
-	access, refresh, err := l.repo.JWT.GenerateTokens(id, req.Email)
+	access, refresh, err := l.repo.JWT.GenerateTokens(id, "Registered", req.Email)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
@@ -151,7 +151,7 @@ func (l *UserAPILogic) Login(username, password string) (models.UserResponse, er
 		return models.UserResponse{}, errors.ErrInvalidPassword
 	}
 
-	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Email)
+	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Role, u.Email)
 	if err != nil {
 		return models.UserResponse{}, err
 	}
@@ -190,7 +190,7 @@ func (l *UserAPILogic) Refresh(token string) (models.UserResponse, error) {
 		return models.UserResponse{}, errors.ErrNoUser
 	}
 
-	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Email)
+	access, refresh, err := l.repo.JWT.GenerateTokens(u.ID, u.Role, u.Email)
 	if err != nil {
 		return models.UserResponse{}, err
 	}

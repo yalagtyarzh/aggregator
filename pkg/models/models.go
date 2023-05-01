@@ -115,5 +115,6 @@ type Genre struct {
 type TokenPayload struct {
 	UserID uuid.UUID `json:"userId"`
 	Email  string    `json:"email"`
+	Role   string    `json:"role"`
 	jwt.StandardClaims
 }

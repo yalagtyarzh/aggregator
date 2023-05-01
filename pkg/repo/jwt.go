@@ -27,10 +27,11 @@ func NewJWTer(db IDB, cfg config.JWTConfig) *JWTer {
 	}
 }
 
-func (l *JWTer) GenerateTokens(userId uuid.UUID, email string) (string, string, error) {
+func (l *JWTer) GenerateTokens(userId uuid.UUID, role, email string) (string, string, error) {
 	accessPayload := models.TokenPayload{
 		UserID: userId,
 		Email:  email,
+		Role:   role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(30 * time.Minute).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -40,6 +41,7 @@ func (l *JWTer) GenerateTokens(userId uuid.UUID, email string) (string, string, 
 	refreshPayload := models.TokenPayload{
 		UserID: userId,
 		Email:  email,
+		Role:   role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(30 * 24 * time.Hour).Unix(),
 			IssuedAt:  time.Now().Unix(),
