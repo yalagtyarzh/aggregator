@@ -88,8 +88,8 @@ type CreateUser struct {
 }
 
 type LoginRequest struct {
-	Username string `json:"userName" validate:"required,min=3,max=32"`
-	Password string `json:"password" validate:"required"`
+	Username string `json:"userName" validate:"required,min=3"`
+	Password string `json:"password" validate:"required,min=3,max=32"`
 }
 
 type UserResponse struct {
