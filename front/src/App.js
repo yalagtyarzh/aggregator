@@ -29,7 +29,7 @@ export default function App() {
                                         <Link to="/products">Products</Link>
                                     </li>
                                     <li className="list-group-item">
-                                        <Link to="/by-genre">Genres</Link>
+                                        <Link to="/genres">Genres</Link>
                                     </li>
                                     <li className="list-group-item">
                                         <Link to="/admin">Manage Products</Link>
@@ -44,22 +44,9 @@ export default function App() {
                                 <Route path="/products">
                                     <Products/>
                                 </Route>
-                                <Route exact path="/by-genre">
-                                    <GenrePage/>
+                                <Route exact path="/genres">
+                                    <Genres/>
                                 </Route>
-
-                                <Route
-                                    exact
-                                    path="/by-genre/drama"
-                                    render={(props) => <Genres {...props} title={`Drama`}/>}
-                                />
-
-                                <Route
-                                    exact
-                                    path="/by-genre/comedy"
-                                    render={(props) => <Genres {...props} title={`Comedy`}/>}
-                                />
-
                                 <Route path="/admin">
                                     <Admin/>
                                 </Route>
@@ -75,20 +62,6 @@ export default function App() {
     );
 }
 
-function GenrePage() {
-
-    let {path, url} = useRouteMatch();
-    return (
-        <div>
-            <h2>Genres</h2>
-
-            <ul>
-                <li><Link to={`${path}/drama`}>Drama</Link></li>
-                <li><Link to={`${url}/comedy`}>Comedy</Link></li>
-            </ul>
-        </div>
-    );
-}
 
 
 

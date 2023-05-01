@@ -32,6 +32,7 @@ func (s *UserAPIService) Router(r *mux.Router, mw *middleware.Middleware) {
 	v1.HandleFunc("/reviews/get", s.handlers.ReviewsGet).Methods("GET")
 	v1.HandleFunc("/products", s.handlers.ProductsGetMany).Methods("GET")
 	v1.HandleFunc("/products/get", s.handlers.ProductsGet).Methods("GET")
+	v1.HandleFunc("/genres", s.handlers.GenresGet).Methods("GET")
 
 	v1.HandleFunc("/registration", s.handlers.Registration).Methods("POST")
 	v1.HandleFunc("/login", s.handlers.Login).Methods("POST")

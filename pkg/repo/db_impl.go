@@ -415,3 +415,16 @@ func (d *dbPSQL) FindToken(token string) (*models.Token, error) {
 
 	return &res, nil
 }
+
+func (d *dbPSQL) SelectGenres() ([]models.Genre, error) {
+	g := make([]models.Genre, 0)
+
+	if err := d.db.Select(&g, `SELECT name as genre from genres`); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return g, nil
+}

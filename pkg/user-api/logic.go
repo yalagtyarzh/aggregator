@@ -15,4 +15,5 @@ type IUserAPILogic interface {
 	Login(username, password string) (models.UserResponse, error)
 	Logout(token string) error
 	Refresh(token string) (models.UserResponse, error)
+	ListGenres() ([]models.Genre, error)
 }

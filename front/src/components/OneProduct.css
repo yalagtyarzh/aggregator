@@ -1,0 +1,15 @@
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+td {
+    word-break: break-all;
+}
+
+@media (max-width: 768px) {
+    .product-image {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}

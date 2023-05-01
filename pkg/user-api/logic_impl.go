@@ -204,3 +204,12 @@ func (l *UserAPILogic) Refresh(token string) (models.UserResponse, error) {
 		AccessToken: access, RefreshToken: refresh, UserID: u.ID.String(), Email: u.Email,
 	}, err
 }
+
+func (l *UserAPILogic) ListGenres() ([]models.Genre, error) {
+	genres, err := l.repo.DB.SelectGenres()
+	if err != nil {
+		return nil, err
+	}
+
+	return genres, nil
+}

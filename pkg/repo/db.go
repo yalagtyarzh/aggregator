@@ -26,4 +26,5 @@ type IDB interface {
 	UpdateToken(userId uuid.UUID, refreshToken string) error
 	DeleteToken(token string) error
 	FindToken(token string) (*models.Token, error)
+	SelectGenres() ([]models.Genre, error)
 }

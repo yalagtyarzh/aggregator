@@ -417,3 +417,25 @@ func (h *Handlers) refresh(w http.ResponseWriter, r *http.Request) *helpers.AppE
 
 	return nil
 }
+
+func (h *Handlers) GenresGet(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.genresGet, w, r, h.log)
+}
+
+func (h *Handlers) genresGet(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	g, err := h.logic.ListGenres()
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(g)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
+}
