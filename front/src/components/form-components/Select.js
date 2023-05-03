@@ -8,13 +8,12 @@ const Select = (props) => {
             <select className={"form-select"} name={props.name} id={props.name} value={props.value}
                     onChange={props.handleChange}>
                 <option value="">{props.placeholder}</option>
-                {props.options.map((option) => {
+                {props.options.map((option, index) => {
                     return (
-                        <option className={"form-select"} value={option.value}>{option.value}</option>
+                        <option className={"form-select"} key={index} value={option.value}>{option.value}</option>
                     )
                 })}
             </select>
-
         </div>
     );
 }
