@@ -4,6 +4,7 @@ import MultipleCheckbox from "./form-components/MultipleCheckbox";
 import TextArea from "./form-components/TextArea";
 import Input from "./form-components/Input";
 import Select from "./form-components/Select"
+import Alert from "./ui-components/Alert";
 
 export default class EditProduct extends Component {
     state = {
@@ -81,7 +82,16 @@ export default class EditProduct extends Component {
         fetch(url, requestOptions)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                if (data.error) {
+                    const a = {type: "alert-danger", message: data.error.message}
+                    this.setState({
+                        alert: a,
+                    });
+                } else {
+                    this.setState({
+                        alert: {type: "alert-success", message: "Changes saved!"},
+                    })
+                }
             })
     };
 
@@ -190,6 +200,8 @@ export default class EditProduct extends Component {
             return (
                 <Fragment>
                     <h2>Add/Edit Product</h2>
+                    <Alert
+                        alertType={this.state.alert.type} alertMessage={this.state.alert.message}/>
                     <hr/>
                     <form onSubmit={this.handleSubmit}>
                         <input type="hidden" name={"id"} id={"id"} value={product.id} onChange={this.handleChange}/>
