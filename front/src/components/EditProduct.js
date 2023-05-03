@@ -13,6 +13,7 @@ export default class EditProduct extends Component {
         },
         isLoaded: false,
         error: null,
+        errors: null,
     };
 
     constructor(props) {
@@ -20,10 +21,21 @@ export default class EditProduct extends Component {
         this.state = {
             genres: [],
             product: {
-                id: 0
+                id: 0,
+                title: "",
+                description: "",
+                genres: [],
+                studio: "",
+                rating: "",
+                year: ""
             },
             isLoaded: false,
             error: null,
+            errors: [],
+            alert: {
+                type: "d-none",
+                message: "",
+            },
             ratingOptions: [
                 {id: "G", value: "G"},
                 {id: "PG", value: "PG"},
@@ -39,6 +51,18 @@ export default class EditProduct extends Component {
 
     handleSubmit = (evt) => {
         evt.preventDefault();
+
+        // client side validation
+        let errors = [];
+        if (this.state.product.title === "") {
+            errors.push("title")
+        }
+
+        this.setState({errors: errors})
+
+        if (errors.length > 0) {
+            return false
+        }
 
         const p = this.state.product
         if (p.id === 0) {
@@ -72,6 +96,10 @@ export default class EditProduct extends Component {
         }))
     }
 
+    hasError(key) {
+        return this.state.errors.indexOf(key) !== -1;
+    }
+
     handleCheckboxChange = (evt) => {
         const value = evt.target.value;
         const isChecked = evt.target.checked;
@@ -103,7 +131,6 @@ export default class EditProduct extends Component {
                 return response.json()
             })
             .then((json) => {
-                console.log(json)
                 this.setState(
                     {
                         genres: json,
@@ -123,7 +150,6 @@ export default class EditProduct extends Component {
                     return response.json()
                 })
                 .then((json) => {
-                    console.log(json);
                     this.setState(
                         {
                             product: {
@@ -168,7 +194,9 @@ export default class EditProduct extends Component {
                     <form onSubmit={this.handleSubmit}>
                         <input type="hidden" name={"id"} id={"id"} value={product.id} onChange={this.handleChange}/>
 
-                        <Input title={"Title"} type={"text"} name={"title"} value={product.title}
+                        <Input title={"Title"} className={this.hasError("title") ? "is-invalid" : ""} type={"text"}
+                               name={"title"} value={product.title} errorMsg={"Please enter a title"}
+                               errorDiv={this.hasError("title") ? "text-danger" : "d-none"}
                                handleChange={this.handleChange}/>
                         <Input title={"Year"} type={"text"} name={"year"} value={product.year}
                                handleChange={this.handleChange}/>
@@ -193,10 +221,6 @@ export default class EditProduct extends Component {
 
                         <button className={"btn btn-primary"}>Save</button>
                     </form>
-
-                    <div className={"mt-3"}>
-                        <pre>{JSON.stringify(this.state, null, 3)}</pre>
-                    </div>
                 </Fragment>
             )
         }
