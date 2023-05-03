@@ -6,6 +6,8 @@ import Input from "./form-components/Input";
 import Select from "./form-components/Select"
 import Alert from "./ui-components/Alert";
 import {Link} from "react-router-dom";
+import {confirmAlert} from "react-confirm-alert"
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 export default class EditProduct extends Component {
     state = {
@@ -109,6 +111,21 @@ export default class EditProduct extends Component {
 
     confirmDelete = (e) => {
         console.log("DELETE XD")
+
+        confirmAlert({
+            title: "Delete Product?",
+            message: "Are you sure?",
+            buttons: [
+                {
+                    label:"Yes",
+                    onClick: () =>alert("Click Yes")
+                },
+                {
+                    label:"No",
+                    onClick: () => {}
+                }
+            ]
+        })
     }
 
     hasError(key) {
