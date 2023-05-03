@@ -5,6 +5,7 @@ import TextArea from "./form-components/TextArea";
 import Input from "./form-components/Input";
 import Select from "./form-components/Select"
 import Alert from "./ui-components/Alert";
+import {Link} from "react-router-dom";
 
 export default class EditProduct extends Component {
     state = {
@@ -104,6 +105,10 @@ export default class EditProduct extends Component {
                 [name]: value,
             }
         }))
+    }
+
+    confirmDelete = (e) => {
+        console.log("DELETE XD")
     }
 
     hasError(key) {
@@ -232,9 +237,21 @@ export default class EditProduct extends Component {
                         <hr/>
 
                         <button className={"btn btn-primary"}>Save</button>
+                        <Link to={"/admin"} className={"btn btn-warning ms-1"}>
+                            Cancel
+                        </Link>
+
+                        {product.id > 0 && (
+                            <a href={"#!"} onClick={() => this.confirmDelete()}
+                               className={"btn btn-danger ms-1"}>
+                                Delete
+                            </a>
+                        )}
                     </form>
                 </Fragment>
             )
         }
     }
+
+
 }
