@@ -1,6 +1,15 @@
 import {Component, Fragment} from "react";
 import Alert from "./ui-components/Alert";
 import Input from "./form-components/Input";
+import jwt_decode from "jwt-decode";
+
+const validateEmail = (email) => {
+    return String(email)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+};
 
 export default class Register extends Component {
     constructor(props) {
@@ -36,6 +45,76 @@ export default class Register extends Component {
 
     handleSubmit = (evt) => {
         evt.preventDefault();
+
+        let errors = [];
+
+        if (this.state.firstName === "" || this.state.firstName.length < 2 || this.state.firstName.length > 32) {
+            errors.push("firstName")
+        }
+
+        if (this.state.lastName === "" || this.state.lastName.length < 2 || this.state.lastName.length > 32) {
+            errors.push("lastName")
+        }
+
+        if (this.state.userName === "" || this.state.userName.length < 3 || this.state.userName.length > 32) {
+            errors.push("userName");
+        }
+
+        if (!validateEmail(this.state.email) || this.state.userName.email >150) {
+            errors.push("email");
+        }
+
+        if (this.state.password === "" || this.state.password.length < 3 || this.state.password.length > 32) {
+            errors.push("password");
+        }
+
+        if (this.state.password !== this.state.confirm) {
+            errors.push("confirm");
+        }
+
+        this.setState({errors: errors});
+
+        if (errors.length > 0) {
+            return false;
+        }
+
+        const req = {
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            userName: this.state.userName,
+            email: this.state.email,
+            password: this.state.password,
+        }
+
+        const requestOptions = {
+            method: "POST",
+            body: JSON.stringify(req)
+        }
+
+
+        fetch("http://localhost/api/v1/registration", requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    this.setState({
+                        alert: {
+                            type: "alert-danger",
+                            message: data.error.message,
+                        }
+                    })
+                } else {
+                    const d = jwt_decode(data.refreshToken)
+                    this.handleJWTChange(data.refreshToken, d.userId, d.email, d.role);
+                    window.localStorage.setItem("jwt", JSON.stringify(data.refreshToken))
+                    this.props.history.push({
+                        pathname: "/",
+                    })
+                }
+            })
+    }
+
+    handleJWTChange(jwt, userId, email, role) {
+        this.props.handleJWTChange(jwt, userId, email, role);
     }
 
     hasError(key) {
@@ -45,7 +124,7 @@ export default class Register extends Component {
     render() {
         return (
             <Fragment>
-                <h2>Login</h2>
+                <h2>Sign in</h2>
                 <hr/>
                 <Alert alertType={this.state.alert.type}
                        alertMessage={this.state.alert.message}/>
@@ -80,7 +159,7 @@ export default class Register extends Component {
                     <Input title={"Confirm password"} type={"text"} name={"confirm"} handleChange={this.handleChange}
                            className={this.hasError("confirm") ? "is-invalid" : ""}
                            errorDiv={this.hasError("confirm") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a password confirmation"}/>
+                           errorMsg={"Password confirmation failed"}/>
 
                     <hr/>
 

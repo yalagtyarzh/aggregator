@@ -55,14 +55,14 @@ type Review struct {
 type ReviewCreate struct {
 	ProductID   int    `json:"productId" validate:"required"`
 	Score       int    `json:"score" validate:"required,min=0,max=100"`
-	Content     string `json:"content" validate:"required"`
+	Content     string `json:"content" validate:"required,max=1000"`
 	ContentHTML string `json:"contentHTML" validate:"required"`
 }
 
 type ReviewUpdate struct {
 	ID          int    `json:"id" validate:"required"`
 	Score       int    `json:"score" validate:"required,min=0,max=100"`
-	Content     string `json:"content" validate:"required"`
+	Content     string `json:"content" validate:"required,max=1000"`
 	ContentHTML string `json:"contentHTML" validate:"required"`
 	Delete      bool   `json:"delete"`
 }
@@ -80,10 +80,10 @@ type User struct {
 }
 
 type CreateUser struct {
-	FirstName string `json:"firstName" validate:"required,min=2"`
-	LastName  string `json:"lastName" validate:"required,min=2"`
-	UserName  string `json:"userName" validate:"required,min=3"`
-	Email     string `json:"email" validate:"required,email"`
+	FirstName string `json:"firstName" validate:"required,min=2,max=32"`
+	LastName  string `json:"lastName" validate:"required,min=2,max=32"`
+	UserName  string `json:"userName" validate:"required,min=3,max=32"`
+	Email     string `json:"email" validate:"required,email,max=150"`
 	Password  string `json:"password" validate:"required,min=3,max=32"`
 }
 
