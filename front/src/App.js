@@ -7,6 +7,7 @@ import Genres from "./components/Genres";
 import OneProduct from "./components/OneProduct";
 import OneGenre from "./components/OneGenre";
 import EditProduct from "./components/EditProduct";
+import Login from "./components/Login"
 
 
 export default class App extends Component {
@@ -94,6 +95,10 @@ export default class App extends Component {
                                     <Route exact path="/genres">
                                         <Genres/>
                                     </Route>
+
+                                    <Route exact path={"/login"} component={(props) => <Login {...props} handleJWTChange={this.handleJWTChange} />} />
+                                    <Route exact path={"/register"} component={(props) => <Register {...props} handleJWTChange={this.handleJWTChange} />} />
+
                                     <Route path="/admin/product/:id" component={EditProduct}/>
                                     <Route path="/admin">
                                         <Admin/>
