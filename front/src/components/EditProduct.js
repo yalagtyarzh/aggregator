@@ -91,8 +91,8 @@ export default class EditProduct extends Component {
                         alert: a,
                     });
                 } else {
-                    this.setState({
-                        alert: {type: "alert-success", message: "Changes saved!"},
+                    this.props.history.push({
+                        pathname: "/admin"
                     })
                 }
             })
@@ -117,12 +117,34 @@ export default class EditProduct extends Component {
             message: "Are you sure?",
             buttons: [
                 {
-                    label:"Yes",
-                    onClick: () =>alert("Click Yes")
+                    label: "Yes",
+                    onClick: () => {
+                        const p = this.state.product
+                        p.delete = true
+                        const requestOptions = {
+                            method: "POST",
+                            body: JSON.stringify(JSON.stringify(p))
+                        }
+                        fetch('http://localhost:81/api/v1/admin/product/update', requestOptions)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    const a = {type: "alert-danger", message: data.error.message}
+                                    this.setState({
+                                        alert: a,
+                                    });
+                                } else {
+                                    this.props.history.push({
+                                        pathname: "/admin",
+                                    })
+                                }
+                            })
+                    }
                 },
                 {
-                    label:"No",
-                    onClick: () => {}
+                    label: "No",
+                    onClick: () => {
+                    }
                 }
             ]
         })
