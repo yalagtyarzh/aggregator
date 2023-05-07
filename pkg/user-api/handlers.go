@@ -105,7 +105,14 @@ func (h *Handlers) reviewsCreate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
 
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }
@@ -151,7 +158,14 @@ func (h *Handlers) reviewsUpdate(w http.ResponseWriter, r *http.Request) *helper
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
 
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }
@@ -356,8 +370,14 @@ func (h *Handlers) logout(w http.ResponseWriter, r *http.Request) *helpers.AppEr
 		HttpOnly: true,
 	}
 
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
 	http.SetCookie(w, &c)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }

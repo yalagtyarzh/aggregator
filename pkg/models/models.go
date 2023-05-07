@@ -118,3 +118,7 @@ type TokenPayload struct {
 	Role   string    `json:"role"`
 	jwt.StandardClaims
 }
+
+type StdResp struct {
+	Message string `json:"message"`
+}

@@ -9,6 +9,13 @@ export default class Admin extends Component {
     }
 
     componentDidMount() {
+        if (this.props.jwt === "") {
+            this.props.history.push({
+                pathname: "/login",
+            });
+            return;
+        }
+
         fetch("http://localhost/api/v1/products")
             .then((response) => {
                 if (response.status !== 200) {

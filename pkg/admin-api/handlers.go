@@ -59,7 +59,15 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
+
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }
@@ -108,7 +116,15 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
+
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }

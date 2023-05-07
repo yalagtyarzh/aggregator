@@ -1,6 +1,7 @@
 import {Component, Fragment} from "react";
 import Alert from "./ui-components/Alert";
 import Input from "./form-components/Input";
+import jwt_decode from "jwt-decode";
 
 export default class Login extends Component {
     constructor(props) {
@@ -22,8 +23,8 @@ export default class Login extends Component {
     }
 
     handleChange = (evt) => {
-        let value = this.target.value;
-        let name = this.target.name;
+        let value = evt.target.value;
+        let name = evt.target.name;
         this.setState((prevState) => ({
             ...prevState,
             [name]: value,
@@ -32,6 +33,56 @@ export default class Login extends Component {
 
     handleSubmit = (evt) => {
         evt.preventDefault();
+
+        let errors = [];
+
+        if (this.state.userName === "") {
+            errors.push("userName");
+        }
+
+        if (this.state.password === "") {
+            errors.push("password");
+        }
+
+        this.setState({errors: errors});
+
+        if (errors.length > 0) {
+            return false;
+        }
+
+        const req = {
+            userName: this.state.userName,
+            password: this.state.password,
+        }
+
+        const requestOptions = {
+            method: "POST",
+            body: JSON.stringify(req)
+        }
+
+        fetch("http://localhost/api/v1/login", requestOptions)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    this.setState({
+                        alert: {
+                            type: "alert-danger",
+                            message: data.error.message,
+                        }
+                    })
+                } else {
+                    const d = jwt_decode(data.refreshToken)
+                    this.handleJWTChange(data.refreshToken, d.userId, d.email, d.role);
+                    window.localStorage.setItem("jwt", JSON.stringify(data.refreshToken))
+                    this.props.history.push({
+                        pathname: "/",
+                    })
+                }
+            })
+    };
+
+    handleJWTChange(jwt, userId, email, role) {
+        this.props.handleJWTChange(jwt, userId, email, role);
     }
 
     hasError(key) {
@@ -49,12 +100,12 @@ export default class Login extends Component {
                 <form className={"pt-3"} onSubmit={this.handleSubmit}>
                     <Input title={"Username"} type={"text"} name={"userName"} handleChange={this.handleChange}
                            className={this.hasError("userName") ? "is-invalid" : ""}
-                           errorDiv={this.hasError("userName") ? "test-danger" : "d-none"}
+                           errorDiv={this.hasError("userName") ? "text-danger" : "d-none"}
                            errorMsg={"Please enter a valid username"}/>
 
                     <Input title={"Password"} type={"password"} name={"password"} handleChange={this.handleChange}
                            className={this.hasError("password") ? "is-invalid" : ""}
-                           errorDiv={this.hasError("password") ? "test-danger" : "d-none"}
+                           errorDiv={this.hasError("password") ? "text-danger" : "d-none"}
                            errorMsg={"Please enter a password"}/>
 
                     <hr/>

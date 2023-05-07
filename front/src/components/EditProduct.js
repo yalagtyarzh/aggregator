@@ -13,7 +13,7 @@ export default class EditProduct extends Component {
     state = {
         genres: [],
         product: {
-            genres: null // <-- заменяем пустой массив на null
+            genres: null
         },
         isLoaded: false,
         error: null,
@@ -68,13 +68,22 @@ export default class EditProduct extends Component {
             return false
         }
 
+
         const p = this.state.product
+        p.year = parseInt(p.year)
         if (p.id === 0) {
+
             p.id = undefined
         }
+
+        const headers = new Headers()
+        headers.append("Content-Type", "application/json");
+        headers.append("Authorization", "Bearer " + this.props.jwt);
+
         const requestOptions = {
             method: "POST",
-            body: JSON.stringify(JSON.stringify(p))
+            body: JSON.stringify(p),
+            headers: headers,
         }
 
         let url = 'http://localhost:81/api/v1/admin/product/update'
@@ -110,8 +119,6 @@ export default class EditProduct extends Component {
     }
 
     confirmDelete = (e) => {
-        console.log("DELETE XD")
-
         confirmAlert({
             title: "Delete Product?",
             message: "Are you sure?",
@@ -119,11 +126,15 @@ export default class EditProduct extends Component {
                 {
                     label: "Yes",
                     onClick: () => {
-                        const p = this.state.product
-                        p.delete = true
+
+                        const p = {id: this.state.product.id, delete: true}
+                        const headers = new Headers()
+                        headers.append("Content-Type", "application/json");
+                        headers.append("Authorization", "Bearer " + this.props.jwt);
                         const requestOptions = {
                             method: "POST",
-                            body: JSON.stringify(JSON.stringify(p))
+                            body: JSON.stringify(p),
+                            headers: headers
                         }
                         fetch('http://localhost:81/api/v1/admin/product/update', requestOptions)
                             .then(response => response.json())
@@ -175,6 +186,13 @@ export default class EditProduct extends Component {
     };
 
     componentDidMount() {
+        if (this.props.jwt === "") {
+            this.props.history.push({
+                pathname: "/login",
+            });
+            return;
+        }
+
         fetch("http://localhost/api/v1/genres")
             .then((response) => {
                 if (response.status !== 200) {
@@ -254,7 +272,7 @@ export default class EditProduct extends Component {
                                name={"title"} value={product.title} errorMsg={"Please enter a title"}
                                errorDiv={this.hasError("title") ? "text-danger" : "d-none"}
                                handleChange={this.handleChange}/>
-                        <Input title={"Year"} type={"text"} name={"year"} value={product.year}
+                        <Input title={"Year"} type={"number"} name={"year"} value={product.year}
                                handleChange={this.handleChange}/>
                         <Input title={"Studio"} type={"text"} name={"studio"} value={product.studio}
                                handleChange={this.handleChange}/>
