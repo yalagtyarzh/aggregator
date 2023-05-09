@@ -414,3 +414,13 @@ func (d *dbPSQL) SelectGenres() ([]models.Genre, error) {
 
 	return g, nil
 }
+
+func (d *dbPSQL) UpdateUserRole(userId uuid.UUID, role string) error {
+	_, err := d.db.Exec(`UPDATE users SET role=$1 WHERE id=$2`, role, userId)
+	if driverErr, ok := err.(*pq.Error); ok {
+		if driverErr.Code == foreignKeyViolation {
+			return ErrForeignKeyViolation
+		}
+	}
+	return err
+}

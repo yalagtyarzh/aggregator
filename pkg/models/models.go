@@ -122,3 +122,7 @@ type TokenPayload struct {
 type StdResp struct {
 	Message string `json:"message"`
 }
+
+type PromoteDismissRequest struct {
+	UserID uuid.UUID `json:"userId"`
+}

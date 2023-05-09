@@ -66,3 +66,30 @@ func (l *AdminAPILogic) CreateProduct(userID uuid.UUID, req models.ProductCreate
 
 	return l.repo.DB.InsertProduct(req)
 }
+
+func (l *AdminAPILogic) PromoteRole(token models.TokenPayload, role string, userId uuid.UUID) error {
+	actor, err := l.repo.DB.GetUserByID(token.UserID)
+	if err != nil {
+		return err
+	}
+
+	if actor == nil || actor.Role != "Admin" {
+		return errors.ErrNoPermissions
+	}
+
+	user, err := l.repo.DB.GetUserByID(userId)
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return errors.ErrNoUser
+	}
+
+	err = l.repo.DB.UpdateUserRole(userId, role)
+	if err == repo.ErrForeignKeyViolation {
+		return errors.ErrInvalidRole
+	}
+
+	return err
+}
