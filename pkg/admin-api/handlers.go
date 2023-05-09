@@ -180,3 +180,34 @@ func (h *Handlers) promoteRole(w http.ResponseWriter, r *http.Request) *helpers.
 
 	return nil
 }
+
+func (h *Handlers) ListUsers(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.listUsers, w, r, h.log)
+}
+
+func (h *Handlers) listUsers(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	token, ok := r.Context().Value("token").(models.TokenPayload)
+	if !ok {
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
+	}
+
+	resp, err := h.logic.GetUsers(token)
+	if err == errors.ErrNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", true)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
+}

@@ -424,3 +424,18 @@ func (d *dbPSQL) UpdateUserRole(userId uuid.UUID, role string) error {
 	}
 	return err
 }
+
+func (d *dbPSQL) GetUsers() ([]models.User, error) {
+	u := make([]models.User, 0)
+
+	stmt := `select id, first_name, last_name, user_name, email, role, created_at, updated_at, is_deleted from users`
+
+	if err := d.db.Select(&u, stmt); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return u, nil
+}

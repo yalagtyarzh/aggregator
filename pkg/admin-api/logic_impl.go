@@ -93,3 +93,25 @@ func (l *AdminAPILogic) PromoteRole(token models.TokenPayload, role string, user
 
 	return err
 }
+
+func (l *AdminAPILogic) GetUsers(token models.TokenPayload) ([]models.User, error) {
+	actor, err := l.repo.DB.GetUserByID(token.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if actor == nil || actor.Role != "Admin" {
+		return nil, err
+	}
+
+	resp, err := l.repo.DB.GetUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	if resp == nil {
+		resp = make([]models.User, 0)
+	}
+
+	return resp, nil
+}

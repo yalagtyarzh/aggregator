@@ -27,6 +27,7 @@ func (s *AdminAPIService) Router(r *mux.Router, mw *middleware.Middleware) {
 	v1.HandleFunc("/product/create", s.handlers.ProductCreate).Methods("POST", "OPTIONS")
 	v1.HandleFunc("/product/update", s.handlers.ProductUpdate).Methods("POST", "OPTIONS")
 	v1.HandleFunc("/promote/{role}", s.handlers.PromoteRole).Methods("POST, OPTIONS")
+	v1.HandleFunc("/users", s.handlers.ListUsers).Methods("GET", "OPTIONS")
 	v1.Use(mw.AuthMiddleware)
 }
 

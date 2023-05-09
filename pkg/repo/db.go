@@ -28,4 +28,5 @@ type IDB interface {
 	FindToken(token string) (*models.Token, error)
 	SelectGenres() ([]models.Genre, error)
 	UpdateUserRole(userId uuid.UUID, role string) error
+	GetUsers() ([]models.User, error)
 }
