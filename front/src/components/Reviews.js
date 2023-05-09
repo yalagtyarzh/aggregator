@@ -3,9 +3,6 @@ import ReviewForm from "./form-components/ReviewForm";
 
 export default class Reviews extends Component {
     state = {reviews: [], isLoaded: false, error: null};
-    constructor(props) {
-        super(props);
-    }
 
     componentDidMount() {
         fetch("http://localhost/api/v1/reviews/get?pid=" + this.props.id)
@@ -42,8 +39,8 @@ export default class Reviews extends Component {
                 {this.state.reviews.length > 0 ? (
                     <div>
                         <h3>User Reviews</h3>
-                        {this.state.reviews.map((review, index) => (
-                            <div className="card mt-2" key={index}>
+                        {this.state.reviews.map((review) => (
+                            <div className="card mt-2" key={review.id}>
                                 <div className="card-body">
                                     <span className={"d-flex justify-content-between"}>
                                         <h5 className="card-title">{review.userName}</h5>

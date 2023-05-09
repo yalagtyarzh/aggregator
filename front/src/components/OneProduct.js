@@ -6,10 +6,6 @@ export default class OneProduct extends Component {
 
     state = {product: {}, isLoaded: false, error: null};
 
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         fetch("http://localhost/api/v1/products/get/?pid=" + this.props.match.params.id)
             .then((response) => {
