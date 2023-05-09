@@ -98,7 +98,7 @@ export default class App extends Component {
                             <div className="col-md-10">
                                 <Switch>
                                     <Route path="/product/:id" component={(props) => (
-                                        <OneProduct {...props} jwt={this.state.jwt} role={this.state.role}/>
+                                        <OneProduct {...props} jwt={this.state.jwt} role={this.state.role} userId={this.state.userId}/>
                                     )}/>
 
                                     <Route path="/genre/:id" component={OneGenre}/>

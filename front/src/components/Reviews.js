@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import ReviewForm from "./form-components/ReviewForm";
 
 export default class Reviews extends Component {
-    state = {reviews: [], isLoaded: false, error: null};
+    state = {reviews: [], isLoaded: false, error: null, found: false};
 
     componentDidMount() {
         fetch("http://localhost/api/v1/reviews/get?pid=" + this.props.id)
@@ -26,13 +26,18 @@ export default class Reviews extends Component {
                         })
                     }
                 );
+                if (json.find(element => element.userId === this.props.userId)) {
+                    this.setState({found: true})
+                }
             });
+
+
     }
 
     render() {
         return (
             <div>
-                {this.props.jwt !== "" && (
+                {(this.props.jwt !== "" && !this.state.found) && (
                     <ReviewForm/>
                 )}
 
@@ -49,10 +54,28 @@ export default class Reviews extends Component {
                                     <h6 className="card-subtitle mb-2 text-muted">{review.firstName} {review.lastName}</h6>
 
                                     <p className="card-text">{review.content}</p>
+                                    <div className={"d-flex justify-content-end"}>
+                                        {((this.props.userId === review.userId) || (this.props.role !== "Registered")) && (
+                                            <a href={"#!"} onClick={() => this.confirmDelete()}
+                                               className={"btn btn-danger ms-1"}>
+                                                Delete
+                                            </a>
+                                        )}
+
+                                        {this.props.userId === review.userId && (
+                                            <a href={"#!"} onClick={() => this.confirmDelete()}
+                                               className={"btn btn-primary ms-1"}>
+                                                Edit
+                                            </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
+                        <hr/>
                     </div>
+
+
                 ) : (<p>No reviews yet.</p>)}
             </div>
         );
