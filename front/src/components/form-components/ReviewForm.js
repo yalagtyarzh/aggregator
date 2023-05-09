@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 
 const ReviewForm = ({ onSubmit }) => {
-    const [name, setName] = useState("");
     const [comment, setComment] = useState("");
-    const [rating, setRating] = useState(1);
+    const [rating, setRating] = useState(0);
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        onSubmit({ name, comment, rating });
-        setName("");
-        setComment("");
-        setRating(1);
+        console.log(comment, rating)
     };
 
     return (

@@ -38,7 +38,7 @@ export default class Reviews extends Component {
         return (
             <div>
                 {(this.props.jwt !== "" && !this.state.found) && (
-                    <ReviewForm/>
+                    <ReviewForm jwt={this.props.jwt}/>
                 )}
 
                 {this.state.reviews.length > 0 ? (
