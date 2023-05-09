@@ -1,7 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {BrowserRouter as Router, Link, Route, Switch} from "react-router-dom";
 import Products from "./components/Products";
-import Home from "./components/Home";
 import Admin from "./components/Admin";
 import Genres from "./components/Genres";
 import OneProduct from "./components/OneProduct";
@@ -79,9 +78,6 @@ export default class App extends Component {
                                             <Link to="/">Home</Link>
                                         </li>
                                         <li className="list-group-item">
-                                            <Link to="/products">Products</Link>
-                                        </li>
-                                        <li className="list-group-item">
                                             <Link to="/genres">Genres</Link>
                                         </li>
 
@@ -101,10 +97,9 @@ export default class App extends Component {
 
                             <div className="col-md-10">
                                 <Switch>
-                                    <Route path="/product/:id" component={OneProduct}/>
-                                    <Route path="/products">
-                                        <Products/>
-                                    </Route>
+                                    <Route path="/product/:id" component={(props) => (
+                                        <OneProduct {...props} jwt={this.state.jwt} role={this.state.role}/>
+                                    )}/>
 
                                     <Route path="/genre/:id" component={OneGenre}/>
                                     <Route exact path="/genres">
@@ -123,7 +118,7 @@ export default class App extends Component {
                                         <Admin/>
                                     </Route>
                                     <Route path="/">
-                                        <Home/>
+                                        <Products/>
                                     </Route>
                                 </Switch>
                             </div>

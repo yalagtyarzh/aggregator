@@ -1,10 +1,14 @@
 import React, {Component, Fragment} from "react";
 import "./OneProduct.css"
+import Reviews from "./Reviews";
 
 export default class OneProduct extends Component {
 
-    state = {product: {
-        }, isLoaded: false, error: null};
+    state = {product: {}, isLoaded: false, error: null};
+
+    constructor(props) {
+        super(props);
+    }
 
     componentDidMount() {
         fetch("http://localhost/api/v1/products/get/?pid=" + this.props.match.params.id)
@@ -55,7 +59,7 @@ export default class OneProduct extends Component {
                         <small>Rating: {product.rating}</small>
                     </div>
                     <div className={"float-end"}>
-                        {product.genres.map((m, index) =>(
+                        {product.genres.map((m, index) => (
                             <span className={"badge bg-secondary me-1"} key={index}>
                                     {m.genre}
                                 </span>
@@ -92,6 +96,11 @@ export default class OneProduct extends Component {
                             </table>
                         </div>
                     </div>
+
+                    <hr/>
+
+                    <Reviews  jwt={this.props.jwt} id={this.props.match.params.id}/>
+
                 </Fragment>
             )
         }
