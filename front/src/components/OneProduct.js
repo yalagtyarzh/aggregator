@@ -95,7 +95,7 @@ export default class OneProduct extends Component {
 
                     <hr/>
 
-                    <Reviews  jwt={this.props.jwt} role={this.props.role} id={this.props.match.params.id} userId={this.props.userId}/>
+                    <Reviews  jwt={this.props.jwt} role={this.props.role} id={this.props.match.params.id} userId={this.props.userId} pid={this.props.match.params.id}/>
 
                 </Fragment>
             )

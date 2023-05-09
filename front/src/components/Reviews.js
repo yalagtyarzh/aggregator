@@ -1,8 +1,16 @@
 import React, {Component} from "react";
 import ReviewForm from "./form-components/ReviewForm";
+import {confirmAlert} from "react-confirm-alert"
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 export default class Reviews extends Component {
     state = {reviews: [], isLoaded: false, error: null, found: false};
+
+    constructor(props) {
+        super(props);
+
+        this.state = {reviews: [], isLoaded: false, error: null, found: false};
+    }
 
     componentDidMount() {
         fetch("http://localhost/api/v1/reviews/get?pid=" + this.props.id)
@@ -30,15 +38,54 @@ export default class Reviews extends Component {
                     this.setState({found: true})
                 }
             });
+    }
 
+    confirmDelete = (id) => {
+        confirmAlert({
+            title: "Delete Review?",
+            message: "Are you sure?",
+            buttons: [
+                {
+                    label: "Yes",
+                    onClick: () => {
 
+                        const p = {id: id, delete: true}
+                        const headers = new Headers()
+                        headers.append("Content-Type", "application/json");
+                        headers.append("Authorization", "Bearer " + this.props.jwt);
+                        const requestOptions = {
+                            method: "POST",
+                            body: JSON.stringify(p),
+                            headers: headers
+                        }
+                        fetch("http://localhost/api/v1/reviews/update", requestOptions)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    const a = {type: "alert-danger", message: data.error.message}
+                                    this.setState({
+                                        alert: a,
+                                    });
+                                } else {
+                                    window.location.reload()
+                                }
+                            })
+                    }
+                },
+                {
+                    label: "No",
+                    onClick: () => {
+                    }
+                }
+            ]
+        })
     }
 
     render() {
         return (
             <div>
                 {(this.props.jwt !== "" && !this.state.found) && (
-                    <ReviewForm jwt={this.props.jwt}/>
+                    <ReviewForm pid={this.props.pid} jwt={this.props.jwt}/>
                 )}
 
                 {this.state.reviews.length > 0 ? (
@@ -56,18 +103,18 @@ export default class Reviews extends Component {
                                     <p className="card-text">{review.content}</p>
                                     <div className={"d-flex justify-content-end"}>
                                         {((this.props.userId === review.userId) || (this.props.role !== "Registered")) && (
-                                            <a href={"#!"} onClick={() => this.confirmDelete()}
+                                            <a href={"#!"} onClick={() => this.confirmDelete(review.id)}
                                                className={"btn btn-danger ms-1"}>
                                                 Delete
                                             </a>
                                         )}
 
-                                        {this.props.userId === review.userId && (
-                                            <a href={"#!"} onClick={() => this.confirmDelete()}
-                                               className={"btn btn-primary ms-1"}>
-                                                Edit
-                                            </a>
-                                        )}
+                                        {/*{this.props.userId === review.userId && (*/}
+                                        {/*    <a href={"#!"} onClick={() => this.confirmDelete()}*/}
+                                        {/*       className={"btn btn-primary ms-1"}>*/}
+                                        {/*        Edit*/}
+                                        {/*    </a>*/}
+                                        {/*)}*/}
                                     </div>
                                 </div>
                             </div>
