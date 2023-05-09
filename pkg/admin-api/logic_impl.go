@@ -77,6 +77,10 @@ func (l *AdminAPILogic) PromoteRole(token models.TokenPayload, role string, user
 		return errors.ErrNoPermissions
 	}
 
+	if token.UserID == userId {
+		return errors.ErrSelfPromote
+	}
+
 	user, err := l.repo.DB.GetUserByID(userId)
 	if err != nil {
 		return err
@@ -101,16 +105,12 @@ func (l *AdminAPILogic) GetUsers(token models.TokenPayload) ([]models.User, erro
 	}
 
 	if actor == nil || actor.Role != "Admin" {
-		return nil, err
+		return nil, errors.ErrNoPermissions
 	}
 
 	resp, err := l.repo.DB.GetUsers()
 	if err != nil {
 		return nil, err
-	}
-
-	if resp == nil {
-		resp = make([]models.User, 0)
 	}
 
 	return resp, nil

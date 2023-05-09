@@ -161,6 +161,10 @@ func (h *Handlers) promoteRole(w http.ResponseWriter, r *http.Request) *helpers.
 		return helpers.NewError(http.StatusBadRequest, err, "no user to promote", true)
 	}
 
+	if err == errors.ErrSelfPromote {
+		return helpers.NewError(http.StatusBadRequest, err, "can not self promote", true)
+	}
+
 	if err == errors.ErrInvalidRole {
 		return helpers.NewError(http.StatusBadRequest, err, "invalid role", true)
 	}

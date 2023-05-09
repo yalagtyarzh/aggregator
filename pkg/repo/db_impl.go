@@ -119,7 +119,7 @@ func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.Product, error) {
 	var p models.Product
 
-	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, 
+	stmt := `select id, title, description, year, studio, rating, created_at, updated_at, 
 			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1), 0) as score from products
 			 where id=$1 and is_deleted=$2
 			 group by id
@@ -146,7 +146,7 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDel
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, 
-			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1), 0) as score from products p
+			 coalesce((SELECT round(avg(score)) from reviews), 0) as score from products p
 			 join products_genres pg on p.id=pg.product_id`
 
 	where := make([]string, 0)
@@ -428,7 +428,7 @@ func (d *dbPSQL) UpdateUserRole(userId uuid.UUID, role string) error {
 func (d *dbPSQL) GetUsers() ([]models.User, error) {
 	u := make([]models.User, 0)
 
-	stmt := `select id, first_name, last_name, user_name, email, role, created_at, updated_at, is_deleted from users`
+	stmt := `select id, first_name, last_name, user_name, email, role, created_at, updated_at from users`
 
 	if err := d.db.Select(&u, stmt); err != nil {
 		if err == sql.ErrNoRows {
