@@ -39,9 +39,8 @@ func (d *dbPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 
 	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
-			 join products_reviews pr on r.id = pr.review_id
 			 join users u on r.user_id = u.id
-			 where pr.product_id = $1
+			 where r.product_id = $1
 	`
 
 	if err := d.db.Select(&r, stmt, pid); err != nil {
@@ -59,8 +58,7 @@ func (d *dbPSQL) GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*mo
 	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
 			 join users u on r.user_id = u.id
-			 join products_reviews pr on r.id = pr.review_id
-			 where u.id = $1 AND pr.product_id = $2 and r.is_deleted=false LIMIT 1
+			 where u.id = $1 AND r.product_id = $2 and r.is_deleted=false LIMIT 1
 	`
 
 	if err := d.db.Get(&r, stmt, userId, productId); err != nil {
@@ -96,7 +94,7 @@ func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 	var p models.Product
 
 	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = $1), 0) as score from products
+			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1), 0) as score from products
 			 where id = $1
 			 group by id
 			 limit 1`
@@ -122,7 +120,7 @@ func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.P
 	var p models.Product
 
 	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = $1), 0) as score from products
+			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1), 0) as score from products
 			 where id=$1 and is_deleted=$2
 			 group by id
 			 limit 1`
@@ -148,7 +146,7 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDel
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = p.id), 0) as score from products p
+			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1), 0) as score from products p
 			 join products_genres pg on p.id=pg.product_id`
 
 	where := make([]string, 0)
@@ -208,19 +206,7 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 		}()
 	}()
 
-	var reviewID int
-	err = tx.QueryRow("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4) returning id", rc.Score, rc.Content, rc.ContentHTML, userID).Scan(&reviewID)
-	if driverErr, ok := err.(*pq.Error); ok {
-		if driverErr.Code == foreignKeyViolation {
-			return ErrForeignKeyViolation
-		}
-	}
-
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec("INSERT INTO products_reviews(product_id, review_id) VALUES($1, $2)", rc.ProductID, reviewID)
+	_, err = tx.Exec("INSERT INTO reviews(score, content, content_html, user_id, product_id) VALUES($1, $2, $3, $4, $5)", rc.Score, rc.Content, rc.ContentHTML, userID, rc.ProductID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation

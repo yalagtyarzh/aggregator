@@ -53,16 +53,11 @@ CREATE TABLE reviews
     content      TEXT               NOT NULL,
     content_html TEXT               NOT NULL,
     user_id      UUID               NOT NULL REFERENCES users (id),
+    product_id   INTEGER            NOT NULL REFERENCES products (id),
     created_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP          NOT NULL DEFAULT NOW(),
     is_deleted   bool               NOT NULL DEFAULT FALSE,
     CHECK (score BETWEEN 0 AND 100)
-);
-
-CREATE TABLE products_reviews
-(
-    product_id INTEGER NOT NULL REFERENCES products (id),
-    review_id  INTEGER NOT NULL REFERENCES reviews (id)
 );
 
 CREATE TABLE users_tokens
