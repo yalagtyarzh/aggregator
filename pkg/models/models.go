@@ -15,6 +15,7 @@ type Product struct {
 	Studio      string    `json:"studio" db:"studio"`
 	Rating      string    `json:"rating" db:"rating"`
 	Score       int       `json:"score" db:"score"`
+	ImageLink   string    `json:"imageLink" db:"img_link"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
 	UpdatedAt   time.Time `json:"UpdatedAt" db:"updated_at"`
 }
@@ -26,6 +27,7 @@ type ProductCreate struct {
 	Genres      []Genre `json:"genres" validate:"required,min=1"`
 	Studio      string  `json:"studio" db:"studio" validate:"required"`
 	Rating      string  `json:"rating" db:"rating" validate:"required"`
+	ImageLink   string  `json:"imageLink" db:"img_link" validate:"required,http_url"`
 }
 
 type ProductUpdate struct {
@@ -36,6 +38,7 @@ type ProductUpdate struct {
 	Genres      []Genre `json:"genres" validate:"required,min=1"`
 	Studio      string  `json:"studio" db:"studio" validate:"required"`
 	Rating      string  `json:"rating" db:"rating" validate:"required"`
+	ImageLink   string  `json:"imageLink" db:"img_link" validate:"required,http_url"`
 	Delete      bool    `json:"delete"`
 }
 

@@ -18,6 +18,7 @@ CREATE TABLE products
     year        INTEGER            NOT NULL,
     studio      TEXT               NOT NULL,
     rating      TEXT               NOT NULL REFERENCES rating (name),
+    img_link    TEXT               NOT NULL,
     created_at  TIMESTAMP          NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP          NOT NULL DEFAULT NOW(),
     is_deleted  BOOL               NOT NULL DEFAULT FALSE
