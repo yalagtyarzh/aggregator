@@ -278,6 +278,31 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Graphql",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    list {\r\n        id\r\n        title   \r\n        year\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/graphql/list",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"graphql",
+								"list"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -291,13 +316,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM2MjMwNTgsImlhdCI6MTY4MzYyMTI1OH0.heh9qVAjbi1f74tuXony1KzuGcw9G4mGKGoqfYnFKsY",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4Zjg5MC01Njk3LTQzMmEtOTFhYy01ZDlkZWM1YTJjMTkiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM3MzU0OTgsImlhdCI6MTY4MzczMzY5OH0.A4Ij6KJoI5vGO6glUmjpxBBtl3Y56Bixt442eA-_Qpo",
 								"type": "default"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"test\",\r\n    \"description\": \"test\",\r\n    \"genres\": [\r\n        {\r\n            \"genre\": \"Comedy\"\r\n        }\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011\r\n}",
+							"raw": "{\r\n    \"title\": \"test\",\r\n    \"description\": \"test\",\r\n    \"genres\": [\r\n        {\r\n            \"genre\": \"Comedy\"\r\n        }\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"imageLink\": \"https://randomwordgenerator.com/img/picture-generator/57e4dd404d51a914f1dc8460962e33791c3ad6e04e5074417c2e7dd29744c7_640.jpg\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -334,7 +359,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 2,\r\n    \"delete\": true\r\n}",
+							"raw": "{\r\n    \"id\": 2,\r\n     \"title\": \"test\",\r\n    \"description\": \"test\",\r\n    \"genres\": [\r\n        {\r\n            \"genre\": \"Comedy\"\r\n        }\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"imageLink\": \"https://randomwordgenerator.com/img/picture-generator/57e4dd404d51a914f1dc8460962e33791c3ad6e04e5074417c2e7dd29744c7_640.jpg\"\r\n}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -365,7 +390,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM2MjQxMzYsImlhdCI6MTY4MzYyMjMzNn0.VEf31B2javg2lx7_eiL7PJGJdJbJTD84nawA-WDRJmU",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM3MzA4MjksImlhdCI6MTY4MzcyOTAyOX0.6IBgfu0NjNkbFDEWJsx-0sDbnsb3zp28qFkshX3wSZM",
 								"type": "default"
 							}
 						],
