@@ -117,6 +117,30 @@ func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 	return &p, nil
 }
 
+func (d *dbPSQL) GetProducts() ([]models.Product, error) {
+	var p []models.Product
+
+	stmt := `select id,title,description, year, studio, rating, created_at, updated_at, 
+			 coalesce((SELECT round(avg(score)) from reviews WHERE is_deleted=false), 0) as score from products WHERE is_deleted=false order by updated_at`
+
+	if err := d.db.Select(&p, stmt); err != nil {
+		return nil, err
+	}
+
+	stmt = `select genre from products_genres where product_id=$1`
+	for i, v := range p {
+		var g []models.Genre
+		err := d.db.Select(&g, stmt, v.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		p[i].Genres = g
+	}
+
+	return p, nil
+}
+
 func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.Product, error) {
 	var p models.Product
 
@@ -143,7 +167,8 @@ func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.P
 	return &p, nil
 }
 
-func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error) {
+func (d *dbPSQL) GetProductsWithFilter(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product,
+	error) {
 	p := make([]models.Product, 0)
 
 	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, 

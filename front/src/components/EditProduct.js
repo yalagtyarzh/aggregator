@@ -186,7 +186,7 @@ export default class EditProduct extends Component {
     };
 
     componentDidMount() {
-        if (this.props.jwt === "") {
+        if (this.props.role !== "Admin") {
             this.props.history.push({
                 pathname: "/login",
             });

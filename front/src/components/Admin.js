@@ -9,7 +9,7 @@ export default class Admin extends Component {
     }
 
     componentDidMount() {
-        if (this.props.jwt === "") {
+        if (this.props.role !== "Admin") {
             this.props.history.push({
                 pathname: "/login",
             });

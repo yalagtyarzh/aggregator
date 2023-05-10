@@ -34,6 +34,8 @@ func (s *UserAPIService) Router(r *mux.Router, mw *middleware.Middleware) {
 	v1.HandleFunc("/products/get", s.handlers.ProductsGet).Methods("GET", "OPTIONS")
 	v1.HandleFunc("/genres", s.handlers.GenresGet).Methods("GET", "OPTIONS")
 
+	v1.HandleFunc("/graphql/list", s.handlers.GraphqlList).Methods("POST", "OPTIONS")
+
 	v1.HandleFunc("/registration", s.handlers.Registration).Methods("POST", "OPTIONS")
 	v1.HandleFunc("/login", s.handlers.Login).Methods("POST", "OPTIONS")
 	v1.HandleFunc("/logout", s.handlers.Logout).Methods("POST", "OPTIONS")

@@ -9,6 +9,8 @@ import EditProduct from "./components/EditProduct";
 import Login from "./components/Login"
 import Register from "./components/Register";
 import jwt_decode from "jwt-decode";
+import GraphQL from "./components/GraphQL";
+import Users from "./components/Users";
 
 export default class App extends Component {
     constructor(props) {
@@ -81,6 +83,10 @@ export default class App extends Component {
                                             <Link to="/genres">Genres</Link>
                                         </li>
 
+                                        <li className={"list-group-item"}>
+                                            <Link to={"/graphql"}>Search product</Link>
+                                        </li>
+
                                         {this.state.role === "Admin" && (
                                             <Fragment>
                                                 <li className="list-group-item">
@@ -88,6 +94,9 @@ export default class App extends Component {
                                                 </li>
                                                 <li className="list-group-item">
                                                     <Link to="/admin">Manage Products</Link>
+                                                </li>
+                                                <li className="list-group-item">
+                                                    <Link to="/users">Users</Link>
                                                 </li>
                                             </Fragment>
                                         )}
@@ -98,12 +107,17 @@ export default class App extends Component {
                             <div className="col-md-10">
                                 <Switch>
                                     <Route path="/product/:id" component={(props) => (
-                                        <OneProduct {...props} jwt={this.state.jwt} role={this.state.role} userId={this.state.userId}/>
+                                        <OneProduct {...props} jwt={this.state.jwt} role={this.state.role}
+                                                    userId={this.state.userId}/>
                                     )}/>
 
                                     <Route path="/genre/:id" component={OneGenre}/>
                                     <Route exact path="/genres">
                                         <Genres/>
+                                    </Route>
+
+                                    <Route exact path="/graphql">
+                                        <GraphQL/>
                                     </Route>
 
                                     <Route exact path={"/login"} component={(props) => <Login {...props}
@@ -114,9 +128,16 @@ export default class App extends Component {
                                     <Route path="/admin/product/:id" component={(props) => (
                                         <EditProduct {...props} jwt={this.state.jwt} role={this.state.role}/>
                                     )}/>
-                                    <Route path="/admin">
-                                        <Admin/>
+                                    <Route path="/admin" component={(props) => (
+                                        <Admin {...props} jwt={this.state.jwt} role={this.state.role}/>
+                                    )}>
+
                                     </Route>
+                                    <Route path={"/users"} component={(props) => (
+                                        <Users {...props} jwt={this.state.jwt} role={this.state.role}/>
+                                    )}>
+                                    </Route>
+
                                     <Route path="/">
                                         <Products/>
                                     </Route>

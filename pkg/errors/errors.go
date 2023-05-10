@@ -16,4 +16,5 @@ var (
 	ErrNoToken            = errors.New("token not found")
 	ErrTooManyReviews     = errors.New("too many reviews for user")
 	ErrNoReview           = errors.New("review not found")
+	ErrInvalidGraphql     = errors.New("invalid graphql")
 )

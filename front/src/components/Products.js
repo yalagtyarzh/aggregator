@@ -44,7 +44,13 @@ export default class Products extends Component {
                     <div className={"list-group"}>
                         {products.map((m, index) => (
                             <Link key={index} to={`/product/${m.id}`}
-                                  className="list-group-item list-group-item-action">{m.title}</Link>
+                                  className="list-group-item list-group-item-action">
+                                <strong>{m.title}</strong><br/>
+                                <small className={"text-muted"}>
+                                    {m.year}
+                                </small>
+                                <br/>
+                                {m.description.slice(0, 100)}...</Link>
                         ))}
                     </div>
                 </Fragment>

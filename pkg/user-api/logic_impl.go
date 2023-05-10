@@ -2,11 +2,13 @@ package user_api
 
 import (
 	"github.com/google/uuid"
+	"github.com/graphql-go/graphql"
 	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 	"github.com/yalagtyarzh/aggregator/pkg/repo"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 )
 
 type UserAPILogic struct {
@@ -44,7 +46,7 @@ func (l *UserAPILogic) GetProduct(productId int) (models.Product, error) {
 }
 
 func (l *UserAPILogic) GetProducts(after, limit, year int, genre string) ([]models.Product, error) {
-	s, err := l.repo.DB.GetProducts(after, limit, year, genre, false)
+	s, err := l.repo.DB.GetProductsWithFilter(after, limit, year, genre, false)
 	if err != nil {
 		return []models.Product{}, err
 	}
@@ -212,4 +214,82 @@ func (l *UserAPILogic) ListGenres() ([]models.Genre, error) {
 	}
 
 	return genres, nil
+}
+
+func (l *UserAPILogic) GraphqlList(query string) (*graphql.Result, error) {
+	p, err := l.repo.DB.GetProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	// graphql schema
+	fields := GetFields(p)
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	schema, err := graphql.NewSchema(schemaConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	params := graphql.Params{Schema: schema, RequestString: query}
+	resp := graphql.Do(params)
+	if len(resp.Errors) > 0 {
+		l.log.Errorf("%+v", resp.Errors)
+		return nil, errors.ErrInvalidGraphql
+	}
+
+	return resp, nil
+}
+
+func GetFields(products []models.Product) graphql.Fields {
+	return graphql.Fields{
+		"product": &graphql.Field{
+			Type:        productType,
+			Description: "Get product by id",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, ok := p.Args["id"].(int)
+				if ok {
+					for _, v := range products {
+						if v.ID == id {
+							return v, nil
+						}
+					}
+				}
+				return nil, nil
+			},
+		},
+		"list": &graphql.Field{
+			Type:        graphql.NewList(productType),
+			Description: "Get all products",
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				return products, nil
+			},
+		},
+		"search": &graphql.Field{
+			Type:        graphql.NewList(productType),
+			Description: "Search products by title",
+			Args: graphql.FieldConfigArgument{
+				"titleContains": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+			},
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				var list []models.Product
+				search, ok := params.Args["titleContains"].(string)
+				if ok {
+					for _, v := range products {
+						if strings.Contains(strings.ToLower(v.Title), strings.ToLower(search)) {
+							list = append(list, v)
+						}
+					}
+				}
+				return list, nil
+			},
+		},
+	}
 }

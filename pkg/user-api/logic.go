@@ -2,6 +2,7 @@ package user_api
 
 import (
 	"github.com/google/uuid"
+	"github.com/graphql-go/graphql"
 	"github.com/yalagtyarzh/aggregator/pkg/models"
 )
 
@@ -16,4 +17,35 @@ type IUserAPILogic interface {
 	Logout(token string) error
 	Refresh(token string) (models.UserResponse, error)
 	ListGenres() ([]models.Genre, error)
+	GraphqlList(query string) (*graphql.Result, error)
 }
+
+var productType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Product",
+	Fields: graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"title": &graphql.Field{
+			Type: graphql.String,
+		},
+		"description": &graphql.Field{
+			Type: graphql.String,
+		},
+		"year": &graphql.Field{
+			Type: graphql.Int,
+		},
+		"studio": &graphql.Field{
+			Type: graphql.String,
+		},
+		"rating": &graphql.Field{
+			Type: graphql.String,
+		},
+		"createdAt": &graphql.Field{
+			Type: graphql.DateTime,
+		},
+		"updatedAt": &graphql.Field{
+			Type: graphql.DateTime,
+		},
+	},
+})
