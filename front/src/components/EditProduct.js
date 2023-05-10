@@ -73,7 +73,6 @@ export default class EditProduct extends Component {
         }
 
         if (!isValidUrl(this.state.product.imageLink)) {
-            console.log("xd")
             errors.push("imageLink")
         }
 
