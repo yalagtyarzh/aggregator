@@ -9,6 +9,15 @@ import {Link} from "react-router-dom";
 import {confirmAlert} from "react-confirm-alert"
 import 'react-confirm-alert/src/react-confirm-alert.css'
 
+function isValidUrl(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
 export default class EditProduct extends Component {
     state = {
         genres: [],
@@ -31,7 +40,8 @@ export default class EditProduct extends Component {
                 genres: [],
                 studio: "",
                 rating: "",
-                year: ""
+                year: "",
+                imageLink: ""
             },
             isLoaded: false,
             error: null,
@@ -62,12 +72,16 @@ export default class EditProduct extends Component {
             errors.push("title")
         }
 
+        if (!isValidUrl(this.state.product.imageLink)) {
+            console.log("xd")
+            errors.push("imageLink")
+        }
+
         this.setState({errors: errors})
 
         if (errors.length > 0) {
             return false
         }
-
 
         const p = this.state.product
         p.year = parseInt(p.year)
@@ -284,6 +298,11 @@ export default class EditProduct extends Component {
                         <TextArea title={"Description"} handleChange={this.handleChange} name={"description"}
                                   value={product.description} rows={"3"}/>
 
+                        <Input title={"Image Link"} className={this.hasError("imageLink") ? "is-invalid" : ""} type={"text"}
+                               name={"imageLink"} value={product.imageLink} errorMsg={"Please enter a valid link"}
+                               errorDiv={this.hasError("imageLink") ? "text-danger" : "d-none"}
+                               handleChange={this.handleChange}/>
+
                         <MultipleCheckbox
                             title={"Genres"}
                             name={"genres"}
@@ -309,6 +328,4 @@ export default class EditProduct extends Component {
             )
         }
     }
-
-
 }

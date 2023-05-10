@@ -38,7 +38,7 @@ export default class OneProduct extends Component {
         } else {
             product.genres = []
         }
-        
+
         if (error) {
             return <div>Error: {error.message}</div>
         } else if (!isLoaded) {
@@ -68,7 +68,7 @@ export default class OneProduct extends Component {
                         <div className="col-md-3 d-flex justify-content-center align-items-center product-image"
                              style={{height: "200px"}}>
                             <img
-                                src="https://static.metacritic.com/images/products/movies/1/7795c8c60321e01a5456054663e8b98e-250h.jpg"
+                                src={this.state.product.imageLink} className={"rounded border border-secondary"}
                                 alt="xd" style={{maxWidth: '100%', height: '100%', objectFit: 'cover'}}/>
                         </div>
                         <div className="col-md-9">
