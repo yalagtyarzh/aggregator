@@ -11,7 +11,7 @@ type IDB interface {
 	GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*models.Review, error)
 	GetProductWithDeleted(productId int, isDeleted bool) (*models.Product, error)
 	GetProduct(productId int) (*models.Product, error)
-	GetProducts(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error)
+	GetProductsWithFilter(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error)
 	UpdateReview(rc models.ReviewUpdate) error
 	DeleteReview(reviewID int) error
 	InsertReview(rc models.ReviewCreate, userID uuid.UUID) error
@@ -27,4 +27,7 @@ type IDB interface {
 	DeleteToken(token string) error
 	FindToken(token string) (*models.Token, error)
 	SelectGenres() ([]models.Genre, error)
+	UpdateUserRole(userId uuid.UUID, role string) error
+	GetUsers() ([]models.User, error)
+	GetProducts() ([]models.Product, error)
 }

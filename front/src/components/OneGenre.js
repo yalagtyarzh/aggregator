@@ -1,16 +1,17 @@
 import React, {Component, Fragment} from "react";
 import {Link} from "react-router-dom";
 
-export default class Genres extends Component {
 
+export default class OneGenre extends Component {
     state = {
-        genres: [],
+        products: [],
         isLoaded: false,
         error: null,
+        genreName: "",
     }
 
     componentDidMount() {
-        fetch("http://localhost/api/v1/genres")
+        fetch("http://localhost/api/v1/products?genre=" + this.props.match.params.id)
             .then((response) => {
                 if (response.status !== 200) {
                     let err = Error;
@@ -21,20 +22,26 @@ export default class Genres extends Component {
             })
             .then((json) => {
                 this.setState({
-                        genres: json,
+                        products: json,
                         isLoaded: true,
+                        genreName: this.props.location.genreName,
                     },
                     (error) => {
                         this.setState({
                             isLoaded: true,
                             error
-                        });
-                    });
+                        })
+                    }
+                );
             });
     }
 
     render() {
-        const {genres, isLoaded, error} = this.state;
+        let {products, isLoaded, error, genreName} = this.state;
+
+        if (!products) {
+            products = [];
+        }
 
         if (error) {
             return <div>Error: {error.message}</div>
@@ -43,14 +50,18 @@ export default class Genres extends Component {
         } else {
             return (
                 <Fragment>
-                    <h2>Genres</h2>
+                    <h2>Genre: {genreName}</h2>
 
                     <div className={"list-group"}>
-                        {genres.map((m, i) => (
-                            <Link key={i} to={{
-                                pathname: `/genre/${m.genre}`,
-                                genreName: m.genre,
-                            }} className="list-group-item list-group-item-action">{m.genre}</Link>
+                        {products.map((m, index) => (
+                            <Link key={index} to={`/product/${m.id}`}
+                                  className="list-group-item list-group-item-action">
+                                <strong>{m.title}</strong><br/>
+                                <small className={"text-muted"}>
+                                    {m.year}
+                                </small>
+                                <br/>
+                                {m.description.slice(0, 100)}...</Link>
                         ))}
                     </div>
                 </Fragment>

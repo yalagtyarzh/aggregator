@@ -12,4 +12,966 @@ tags:
     description: "Aggregator admin API"
 
 paths:
+  /api/v1/registration:
+    post:
+      tags:
+        - User API V1
+      description: Регистрация пользователя в сервисе. Автоматически выдается роль Registered
+      parameters:
+        - description: Запрос на регистарцию
+          in: body
+          name: registrationRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/registrationRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registrationLoginResponse'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
 
+  /api/v1/login:
+    post:
+      tags:
+        - User API V1
+      description: Вход пользователя в системы
+      parameters:
+        - description: Запрос на вход
+          in: body
+          name: loginRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/loginRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registrationLoginResponse'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/logout:
+    post:
+      tags:
+        - User API V1
+      description: Выход пользователя из системы
+      parameters:
+        - description: Запрос на выход
+          in: cookie
+          name: refreshToken
+          example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4Zjg5MC01Njk3LTQzMmEtOTFhYy01ZDlkZWM1YTJjMTkiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODY0Nzk2NTEsImlhdCI6MTY4Mzg4NzY1MX0.OPhM_PNkzqYOQcZQlkgHYI5rkgKu1ZHuw6hAQ31bVB4
+          required: true
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/products:
+    get:
+      tags:
+        - User API V1
+      description: Получения списка продуктов
+      parameters:
+        - $ref: '#/components/parameters/after'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/year'
+        - $ref: '#/components/parameters/genre'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getProductsResponse'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/products/get:
+    get:
+      tags:
+        - User API V1
+      description: Получение продукта по его ID
+      parameters:
+        - $ref: '#/components/parameters/productID'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getProductResponse'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/genres:
+    get:
+      tags:
+        - User API V1
+      description: Получение списка жанров
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/genre'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/reviews/get:
+    get:
+      tags:
+        - User API V1
+      description: Получения списка отзывов на определенный продукт
+      parameters:
+        - $ref: '#/components/parameters/productID'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getReviewsResponse'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/reviews/create:
+    post:
+      tags:
+        - User API V1
+      description: Создание отзыва
+      parameters:
+        - description: Запрос на создание отзыва
+          in: body
+          name: reviewCreateRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/reviewCreateRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+  /api/v1/reviews/update:
+    post:
+      tags:
+        - User API V1
+      description: Обновление отзыва
+      parameters:
+        - description: Запрос на обновление отзыва
+          in: body
+          name: reviewUpdateRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/reviewUpdateRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        403:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error403'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+  /api/v1/graphql/list:
+    post:
+      tags:
+        - User API V1
+      description: Поиск продукта по graphql запросу
+      parameters:
+        - description: graphql запрос
+          in: body
+          required: true
+          name: graphql
+          example: '{ search(titleContains: "test") { id title description year studio rating } }'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/graphqlResponse'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+
+  /api/v1/admin/product/create:
+    post:
+      tags:
+        - Admin API V1
+      description: Создание продукта
+      parameters:
+        - description: Запрос на создание продукта
+          in: body
+          name: productCreateRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/productCreateRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        403:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error403'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+  /api/v1/admin/product/update:
+    post:
+      tags:
+        - Admin API V1
+      description: Обновление продукта
+      parameters:
+        - description: Запрос на обновление продукта
+          in: body
+          name: productUpdateRequest
+          required: true
+          schema:
+            $ref: '#/components/schemas/productUpdateRequest'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        403:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error403'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+  /api/v1/admin/users:
+    get:
+      tags:
+        - Admin API V1
+      description: Получение списка пользователей
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        403:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error403'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+  /api/v1/admin/promote/{role}:
+    post:
+      tags:
+        - Admin API V1
+      description: Выдача определенной роль пользователю
+      parameters:
+        - in: path
+          name: role
+          required: true
+          example: Moderator
+        - in: body
+          name: userId
+          required: true
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+                description: UUID пользователя
+                example: 6b62e7fa-76be-4ec6-a43c-bf5ec080e7cf
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/default200'
+        400:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        401:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error401'
+        403:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error403'
+        500:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error500'
+      security:
+        - Authorization: [ ]
+
+
+components:
+  parameters:
+    productID:
+      in: query
+      name: pid
+      required: true
+      description: "ID продукта"
+      schema:
+        type: integer
+
+    after:
+      in: query
+      name: after
+      required: false
+      description: "После какой записи начинаем выборку, удобно использовать для пагинации"
+      schema:
+        type: integer
+
+    limit:
+      in: query
+      name: limit
+      required: false
+      description: "Сколько записей хотим получить, удобно использовать для пагинации"
+      schema:
+        type: integer
+
+    year:
+      in: query
+      name: year
+      required: false
+      description: "Год выпуска продукта"
+      schema:
+        type: integer
+
+    genre:
+      in: query
+      name: genre
+      required: false
+      description: "Жанр продукта"
+      schema:
+        type: string
+
+
+  schemas:
+    registrationRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Имя пользователя
+          example: Dmitry
+        lastName:
+          type: string
+          description: Фамилия пользователя
+          example: Shtanko
+        userName:
+          type: string
+          description: Имя пользователя в системе
+          example: Yalagtyarzh
+        email:
+          type: string
+          description: Почта пользователя
+          example: example@gmail.com
+        password:
+          type: string
+          description: Пароль пользователя
+          example: 1234
+
+    registrationLoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Токен доступа, используется при аутентификации и авторизации
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MmM4YjQ4MC0xMDM1LTQzZmMtOWU4Ny00OWI5MmUxNGE1MDUiLCJlbWFpbCI6InRlc3QxQGEucnUiLCJyb2xlIjoiUmVnaXN0ZXJlZCIsImV4cCI6MTY4Mzg4ODc1NiwiaWF0IjoxNjgzODg2OTU2fQ.b9VWZ-9lGP_SUOawXXqS1iQkY1Q2k0tCvEjC-dMOG5E
+        refreshToken:
+          type: string
+          description: Токен обновления
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MmM4YjQ4MC0xMDM1LTQzZmMtOWU4Ny00OWI5MmUxNGE1MDUiLCJlbWFpbCI6InRlc3QxQGEucnUiLCJyb2xlIjoiUmVnaXN0ZXJlZCIsImV4cCI6MTY4NjQ3ODk1NiwiaWF0IjoxNjgzODg2OTU2fQ.4zotvxWJi1OQcCo8nvY1M-joL-LkSderYA_GlHUfaxU
+        userId:
+          type: string
+          description: UUID пользователя
+          example: 82c8b480-1035-43fc-9e87-49b92e14a505
+        email:
+          type: string
+          description: Почта пользователя
+          example: example@gmail.com
+
+    default200:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ok
+
+    error400:
+      type: object
+      properties:
+        error:
+          type: object
+          description: Ошибка со стороны клиента
+          properties:
+            code:
+              type: integer
+              description: HTTP код ошибки
+              example: 400
+            message:
+              type: string
+              description: Описание ошибки
+              example: invalid request body
+            isBusinessError:
+              type: string
+              description: true - ошибка при работе с бизнес логикой, false - в остальных случаях
+              example: true
+
+    error401:
+      type: object
+      description: Ошибка аутентификации
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Описание ошибки
+              example: unauthorized
+
+    error403:
+      type: object
+      properties:
+        error:
+          type: object
+          description: Ошибка авторизации
+          properties:
+            code:
+              type: integer
+              description: HTTP код ошибки
+              example: 403
+            message:
+              type: string
+              description: Описание ошибки
+              example: no permission to do request
+            isBusinessError:
+              type: string
+              example: true
+
+    error500:
+      type: object
+      properties:
+        error:
+          type: object
+          description: Внутренняя ошибка сервера
+          properties:
+            code:
+              type: integer
+              description: HTTP код ошибки
+              example: 500
+            message:
+              type: string
+              description: Описание ошибки
+              example: internal server error
+            isBusinessError:
+              type: string
+              description: Всегда false
+              example: false
+
+    loginRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: Имя пользователя в системе
+          example: Yalagtyarzh
+        password:
+          type: string
+          description: Пароль пользователя
+          example: 1234
+
+    getReviewsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ID отзыва
+            example: 2
+          score:
+            type: integer
+            minimum: 0
+            maximum: 100
+            description: Поставленный балл
+            example: 67
+          content:
+            type: string
+            description: Содержание отзыва
+            example: test
+          contentHTML:
+            type: string
+            description: Содержание отзыва в качестве HTML разметки. На данный момент равнозначен content
+            example: test
+          userId:
+            type: string
+            description: UUID пользователя
+            example: 2a58f890-5697-432a-91ac-5d9dec5a2c19
+          firstName:
+            type: string
+            description: Имя пользователя
+            example: Dmitry
+          lastName:
+            type: string
+            description: Фамилия пользователя
+            example: Shtanko
+          userName:
+            type: string
+            description: Имя пользователя в системе
+            example: Yalagtyarzh
+          createdAt:
+            type: string
+            description: Дата создания отзыва
+            example: 2023-05-12T10:38:07.463794Z
+          updatedAt:
+            type: string
+            description: Дата обновления отзыва
+            example: 2023-05-12T10:38:07.463794Z
+
+    getProductsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/getProductResponse'
+
+    getProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID продукта
+          example: 2
+        title:
+          type: string
+          description: Название продукта
+          example: title
+        description:
+          type: string
+          description: Описание продукта
+          example: description
+        year:
+          type: integer
+          description: Год выпуска продукта
+          example: 2023
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/genre'
+        studio:
+          type: string
+          description: Студия/Компания, создавшая продукт
+          example: studio
+        rating:
+          type: string
+          description: Возрастной рейтинг
+          example: NC-17
+        score:
+          type: integer
+          description: Средний балл продукта
+          example: 67
+        imageLink:
+          type: string
+          description: Ссылка на картинку
+          example: http://example.com/test.jpg
+        createdAt:
+          type: string
+          description: Дата создания продукта
+          example: 2023-05-12T10:38:07.463794Z
+        updatedAt:
+          type: string
+          description: Дата обновления продукта
+          example: 2023-05-12T10:38:07.463794
+
+    genre:
+      type: object
+      properties:
+        genre:
+          type: string
+          description: Наименование жанра
+          example: Comedy
+
+    reviewCreateRequest:
+      type: object
+      properties:
+        productId:
+          type: integer
+          description: Продукт, на который делаем отзыв
+          example: 2
+        score:
+          type: integer
+          description: Оценка отзыва
+          example: 67
+        content:
+          type: string
+          description: Содержание отзыва
+          example: test
+        contentHTML:
+          type: string
+          description: HTML представление содержания отзыва
+          example: test
+
+    reviewUpdateRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID отзыва
+          example: 2
+        score:
+          type: integer
+          description: Оценка отзыва
+          example: 67
+        content:
+          type: string
+          description: Содержание отзыва
+          example: test
+        contentHTML:
+          type: string
+          description: HTML представление содержания отзыва
+          example: test
+        delete:
+          type: boolean
+          description: Является ли данный запрос на удаление отзыва, если true, то поля content, contentHTML и score не проставляются
+          example: false
+
+    graphqlResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            search:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID продукта
+                    example: 2
+                  title:
+                    type: string
+                    description: Название продукта
+                    example: title
+                  description:
+                    type: string
+                    description: Описание продукта
+                    example: description
+                  year:
+                    type: integer
+                    description: Год выпуска продукта
+                    example: 2023
+                  studio:
+                    type: string
+                    description: Студия/Компания, создавшая продукт
+                    example: studio
+                  rating:
+                    type: string
+                    description: Возрастной рейтинг
+                    example: NC-17
+
+    productCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Наименование продукта
+          example: test
+        description:
+          type: string
+          description: Описание продукта
+          example: test
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/genre'
+        studio:
+          type: string
+          description: Компания/студия, создавшая продукт
+          example: test
+        rating:
+          type: string
+          description: Возрастной рейтинг
+          example: NC-17
+        imageLink:
+          type: string
+          description: Ссылка на картинку
+          example: http://example.com/test.jpg
+
+    productUpdateRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID продукта
+          example:  2
+        title:
+          type: string
+          description: Наименование продукта
+          example: test
+        description:
+          type: string
+          description: Описание продукта
+          example: test
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/genre'
+        studio:
+          type: string
+          description: Компания/студия, создавшая продукт
+          example: test
+        rating:
+          type: string
+          description: Возрастной рейтинг
+          example: NC-17
+        imageLink:
+          type: string
+          description: Ссылка на картинку
+          example: http://example.com/test.jpg
+        delete:
+          type: boolean
+          description: Удаляем ли продукт. Если true, то все поля, кроме id, не указываются
+          example: false
+
+    user:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: UUID пользователя
+          example: 2a58f890-5697-432a-91ac-5d9dec5a2c19
+        firstName:
+          type: string
+          description: Имя пользователя
+          example: Dmitry
+        lastName:
+          type: string
+          description: Фамилия пользователя
+          example: Shtanko
+        userName:
+          type: string
+          description: Имя пользователя в системе
+          example: Yalagtyarzh
+        role:
+          type: string
+          description: Роль пользователя
+          example: Admin
+        createdAt:
+          type: string
+          description: Дата создания пользователя
+          example: 2023-05-12T10:38:07.463794Z
+        updatedAt:
+          type: string
+          description: Дата обновления пользователя
+          example: 2023-05-12T10:38:07.463794Z
+
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

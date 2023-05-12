@@ -1,10 +1,10 @@
 import React, {Component, Fragment} from "react";
 import "./OneProduct.css"
+import Reviews from "./Reviews";
 
 export default class OneProduct extends Component {
 
-    state = {product: {
-        }, isLoaded: false, error: null};
+    state = {product: {}, isLoaded: false, error: null};
 
     componentDidMount() {
         fetch("http://localhost/api/v1/products/get/?pid=" + this.props.match.params.id)
@@ -39,7 +39,6 @@ export default class OneProduct extends Component {
             product.genres = []
         }
 
-
         if (error) {
             return <div>Error: {error.message}</div>
         } else if (!isLoaded) {
@@ -55,7 +54,7 @@ export default class OneProduct extends Component {
                         <small>Rating: {product.rating}</small>
                     </div>
                     <div className={"float-end"}>
-                        {product.genres.map((m, index) =>(
+                        {product.genres.map((m, index) => (
                             <span className={"badge bg-secondary me-1"} key={index}>
                                     {m.genre}
                                 </span>
@@ -69,7 +68,7 @@ export default class OneProduct extends Component {
                         <div className="col-md-3 d-flex justify-content-center align-items-center product-image"
                              style={{height: "200px"}}>
                             <img
-                                src="https://static.metacritic.com/images/products/movies/1/7795c8c60321e01a5456054663e8b98e-250h.jpg"
+                                src={this.state.product.imageLink} className={"rounded border border-secondary"}
                                 alt="xd" style={{maxWidth: '100%', height: '100%', objectFit: 'cover'}}/>
                         </div>
                         <div className="col-md-9">
@@ -92,6 +91,11 @@ export default class OneProduct extends Component {
                             </table>
                         </div>
                     </div>
+
+                    <hr/>
+
+                    <Reviews  jwt={this.props.jwt} role={this.props.role} id={this.props.match.params.id} userId={this.props.userId} pid={this.props.match.params.id}/>
+
                 </Fragment>
             )
         }

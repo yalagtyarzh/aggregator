@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"firstName\",\r\n    \"lastName\": \"lastName\",\r\n    \"userName\": \"test\",\r\n    \"email\": \"test@a.ru\",\r\n    \"password\": \"password\"\r\n}",
+							"raw": "{\r\n    \"firstName\": \"test\",\r\n    \"lastName\": \"test\",\r\n    \"userName\": \"test\",\r\n    \"email\": \"test@a.ru\",\r\n    \"password\": \"test\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -101,7 +101,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{user_url}}/api/v1/reviews/get?pid=1",
+							"raw": "http://{{user_url}}/api/v1/reviews/get?pid=2",
 							"protocol": "http",
 							"host": [
 								"{{user_url}}"
@@ -115,7 +115,7 @@
 							"query": [
 								{
 									"key": "pid",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -188,19 +188,39 @@
 					"response": []
 				},
 				{
+					"name": "GetGenres",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/genres",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "ReviewCreate",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4ZjM5My1mNzMyLTRlYjctODhkMi0zZjY5NjIxNjQ2ZTkiLCJlbWFpbCI6InRlc3RAd2IucnUiLCJleHAiOjE2ODI4NzkzNDgsImlhdCI6MTY4Mjg3NzU0OH0.LJO583wwoFHjFwE40LA0rTBTqrsp1rfPkBTC636DkqM",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM2MjMyMDEsImlhdCI6MTY4MzYyMTQwMX0.EhEcuBToK5bCz3gRa2s557dCEyYj_5JWne2oAF7kdyw",
 								"type": "default"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"productId\": 2,\r\n    \"score\": 33,\r\n    \"content\": \"a\",\r\n    \"contentHTML\": \"a\"\r\n}",
+							"raw": "{\r\n    \"productId\": 2,\r\n    \"score\": 67,\r\n    \"content\": \"test\",\r\n    \"contentHTML\": \"test\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -230,7 +250,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4ZjM5My1mNzMyLTRlYjctODhkMi0zZjY5NjIxNjQ2ZTkiLCJlbWFpbCI6InRlc3RAd2IucnUiLCJleHAiOjE2ODI4NzkyODQsImlhdCI6MTY4Mjg3NzQ4NH0.vKPj-eutnjNvuIJYv3AWo__KVP-LqiYC9r0ZWYhPUm4",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2YjYyZTdmYS03NmJlLTRlYzYtYTQzYy1iZjVlYzA4MGU3Y2YiLCJlbWFpbCI6InRlc3RAYS5ydSIsInJvbGUiOiJSZWdpc3RlcmVkIiwiZXhwIjoxNjgzNjIyOTg0LCJpYXQiOjE2ODM2MjExODR9.Cvclf78dYwvrWMj1Q1X7MD2vZKUPfcpUPutlX8qgvns",
 								"type": "default"
 							}
 						],
@@ -258,6 +278,31 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Graphql",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    list {\r\n        id\r\n        title   \r\n        year\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "http://{{user_url}}/api/v1/graphql/list",
+							"protocol": "http",
+							"host": [
+								"{{user_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"graphql",
+								"list"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -271,13 +316,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGVhZDY2ZS04NGIyLTQzMWMtOWNmOC02NDAzMDUzNGU0MjciLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJleHAiOjE2ODI4NzU5OTAsImlhdCI6MTY4Mjg3NDE5MH0.8bpOWHuXsKRyQkcFURm3iUxexWoAs1smA6ndhkX3nB8",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyYTU4Zjg5MC01Njk3LTQzMmEtOTFhYy01ZDlkZWM1YTJjMTkiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM3MzU0OTgsImlhdCI6MTY4MzczMzY5OH0.A4Ij6KJoI5vGO6glUmjpxBBtl3Y56Bixt442eA-_Qpo",
 								"type": "default"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"title\",\r\n    \"description\": \"description\",\r\n    \"genres\": [\r\n        {\"genre\": \"Comedy\"}\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011\r\n}",
+							"raw": "{\r\n    \"title\": \"test\",\r\n    \"description\": \"test\",\r\n    \"genres\": [\r\n        {\r\n            \"genre\": \"Comedy\"\r\n        }\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"imageLink\": \"https://randomwordgenerator.com/img/picture-generator/57e4dd404d51a914f1dc8460962e33791c3ad6e04e5074417c2e7dd29744c7_640.jpg\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -308,13 +353,13 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGVhZDY2ZS04NGIyLTQzMWMtOWNmOC02NDAzMDUzNGU0MjciLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJleHAiOjE2ODI4NzU5OTAsImlhdCI6MTY4Mjg3NDE5MH0.8bpOWHuXsKRyQkcFURm3iUxexWoAs1smA6ndhkX3nB8",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkZGVhZDY2ZS04NGIyLTQzMWMtOWNmOC02NDAzMDUzNGU0MjciLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODYwNzE1ODksImlhdCI6MTY4MzQ3OTU4OX0.yJfOgK5zImWvDuc-WCWrFX0kGoHlHcCtigPrufwfCuM",
 								"type": "default"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 2,\r\n    \"title\": \"titl\",\r\n    \"description\": \"description\",\r\n    \"genres\": [\r\n        {\"genre\": \"Drama\"}, {\"genre\": \"Comedy\"}\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"delete\": false\r\n}",
+							"raw": "{\r\n    \"id\": 2,\r\n     \"title\": \"test\",\r\n    \"description\": \"test\",\r\n    \"genres\": [\r\n        {\r\n            \"genre\": \"Comedy\"\r\n        }\r\n    ],\r\n    \"studio\": \"test\",\r\n    \"rating\": \"PG\",\r\n    \"year\": 2011,\r\n    \"imageLink\": \"https://randomwordgenerator.com/img/picture-generator/57e4dd404d51a914f1dc8460962e33791c3ad6e04e5074417c2e7dd29744c7_640.jpg\"\r\n}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -333,6 +378,70 @@
 								"admin",
 								"product",
 								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM3MzA4MjksImlhdCI6MTY4MzcyOTAyOX0.6IBgfu0NjNkbFDEWJsx-0sDbnsb3zp28qFkshX3wSZM",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://{{admin_url}}/api/v1/admin/users",
+							"protocol": "http",
+							"host": [
+								"{{admin_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PromoteRole",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzOTExYTc2Yi0wYWM3LTQ0ZWMtOGIxMS1mOTEyZmVmNGYzMDUiLCJlbWFpbCI6IkFkbWluQG1haWwucnUiLCJyb2xlIjoiQWRtaW4iLCJleHAiOjE2ODM2MjQ5NDMsImlhdCI6MTY4MzYyMzE0M30.HgdictTYAmllVGKkg6Md8ke63AYehYo7p6iVdNMUbjs",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"6b62e7fa-76be-4ec6-a43c-bf5ec080e7cf\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{admin_url}}/api/v1/admin/promote/Moderator",
+							"protocol": "http",
+							"host": [
+								"{{admin_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"promote",
+								"Moderator"
 							]
 						}
 					},

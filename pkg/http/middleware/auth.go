@@ -21,6 +21,11 @@ func (m *Middleware) AuthMiddleware(h http.Handler) http.Handler {
 			return
 		}
 
+		if splitted[0] != "Bearer" {
+			responsecodes.Write401("unauthorized", w)
+			return
+		}
+
 		payload, err := m.appJWT.ValidateAccessToken(splitted[1])
 		if err != nil {
 			responsecodes.Write401("unauthorized", w)

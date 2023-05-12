@@ -39,9 +39,9 @@ func (d *dbPSQL) GetReviewsByProductID(pid int) ([]models.Review, error) {
 
 	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
-			 join products_reviews pr on r.id = pr.review_id
 			 join users u on r.user_id = u.id
-			 where pr.product_id = $1
+			 where r.product_id = $1 AND r.is_deleted=false
+			 order by r.created_at
 	`
 
 	if err := d.db.Select(&r, stmt, pid); err != nil {
@@ -59,8 +59,7 @@ func (d *dbPSQL) GetReviewByUserAndProduct(productId int, userId uuid.UUID) (*mo
 	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
 			 join users u on r.user_id = u.id
-			 join products_reviews pr on r.id = pr.review_id
-			 where u.id = $1 AND pr.product_id = $2 and r.is_deleted=false LIMIT 1
+			 where u.id = $1 AND r.product_id = $2 and r.is_deleted=false order by r.created_at LIMIT 1
 	`
 
 	if err := d.db.Get(&r, stmt, userId, productId); err != nil {
@@ -78,8 +77,8 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 
 	stmt := `select r.id as id, r.score, r.content, r.content_html, r.created_at, r.updated_at, u.id as user_id, u.first_name, u.last_name, u.user_name
 			 from reviews r
-			 join users u on r.user_id = u.id
-			 where r.id = $1 LIMIT 1
+			 join users u on r.user_id = u.id 
+			 where r.id = $1 AND r.is_deleted=false LIMIT 1
 	`
 
 	if err := d.db.Get(&r, stmt, reviewID); err != nil {
@@ -95,8 +94,8 @@ func (d *dbPSQL) GetReviewByID(reviewID int) (*models.Review, error) {
 func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 	var p models.Product
 
-	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = $1), 0) as score from products
+	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, img_link, 
+			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1 AND is_deleted=false), 0) as score from products
 			 where id = $1
 			 group by id
 			 limit 1`
@@ -118,12 +117,36 @@ func (d *dbPSQL) GetProduct(productId int) (*models.Product, error) {
 	return &p, nil
 }
 
+func (d *dbPSQL) GetProducts() ([]models.Product, error) {
+	var p []models.Product
+
+	stmt := `select id,title,description, year, studio, rating, created_at, updated_at, img_link,
+			 coalesce((SELECT round(avg(score)) from reviews WHERE is_deleted=false), 0) as score from products WHERE is_deleted=false order by updated_at`
+
+	if err := d.db.Select(&p, stmt); err != nil {
+		return nil, err
+	}
+
+	stmt = `select genre from products_genres where product_id=$1`
+	for i, v := range p {
+		var g []models.Genre
+		err := d.db.Select(&g, stmt, v.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		p[i].Genres = g
+	}
+
+	return p, nil
+}
+
 func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.Product, error) {
 	var p models.Product
 
-	stmt := `select id, title, description, year, studio, rating,  created_at, updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = $1), 0) as score from products
-			 where id=$1 and is_deleted=$2
+	stmt := `select id, title, description, year, studio, rating, created_at, updated_at, img_link,
+			 coalesce((SELECT round(avg(score)) from reviews where product_id = $1 AND is_deleted=false), 0) as score from products
+			 where id=$1 and is_deleted=$2 
 			 group by id
 			 limit 1`
 
@@ -144,11 +167,12 @@ func (d *dbPSQL) GetProductWithDeleted(productId int, isDeleted bool) (*models.P
 	return &p, nil
 }
 
-func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product, error) {
+func (d *dbPSQL) GetProductsWithFilter(after int, limit int, year int, genre string, isDeleted bool) ([]models.Product,
+	error) {
 	p := make([]models.Product, 0)
 
-	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, 
-			 coalesce((SELECT round(avg(r.score)) from reviews r join products_reviews pr on r.id = pr.review_id where pr.product_id = p.id), 0) as score from products p
+	stmt := `select p.id, p.title, p.description, p.year, p.studio, p.rating, p.created_at, p.updated_at, img_link,
+			 coalesce((SELECT round(avg(score)) from reviews WHERE is_deleted=false), 0) as score from products p
 			 join products_genres pg on p.id=pg.product_id`
 
 	where := make([]string, 0)
@@ -186,12 +210,12 @@ func (d *dbPSQL) GetProducts(after int, limit int, year int, genre string, isDel
 }
 
 func (d *dbPSQL) UpdateReview(rc models.ReviewUpdate) error {
-	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3 where id=$4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
+	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3, updated_at=now() where id=$4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
 	return err
 }
 
 func (d *dbPSQL) DeleteReview(reviewID int) error {
-	_, err := d.db.Exec("update reviews set is_deleted=true where id=$1", reviewID)
+	_, err := d.db.Exec("update reviews set is_deleted=true, updated_at=now() where id=$1", reviewID)
 	return err
 }
 
@@ -208,19 +232,7 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 		}()
 	}()
 
-	var reviewID int
-	err = tx.QueryRow("INSERT INTO reviews(score, content, content_html, user_id) VALUES($1, $2, $3, $4) returning id", rc.Score, rc.Content, rc.ContentHTML, userID).Scan(&reviewID)
-	if driverErr, ok := err.(*pq.Error); ok {
-		if driverErr.Code == foreignKeyViolation {
-			return ErrForeignKeyViolation
-		}
-	}
-
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.Exec("INSERT INTO products_reviews(product_id, review_id) VALUES($1, $2)", rc.ProductID, reviewID)
+	_, err = tx.Exec("INSERT INTO reviews(score, content, content_html, user_id, product_id) VALUES($1, $2, $3, $4, $5)", rc.Score, rc.Content, rc.ContentHTML, userID, rc.ProductID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
@@ -235,7 +247,7 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 }
 
 func (d *dbPSQL) DeleteProduct(productID int) error {
-	_, err := d.db.Exec("update products set is_deleted=true where id = $1", productID)
+	_, err := d.db.Exec("update products set is_deleted=true, updated_at=now() where id = $1", productID)
 	return err
 }
 
@@ -251,7 +263,7 @@ func (d *dbPSQL) UpdateProduct(p models.ProductUpdate) error {
 			}
 		}()
 	}()
-	_, err = tx.Exec("update products set title = $1, description = $2, year = $3, studio = $4, rating = $5 where id = $6", p.Title, p.Description, p.Year, p.Studio, p.Rating, p.ID)
+	_, err = tx.Exec("update products set title=$1, description=$2, year=$3, studio=$4, rating=$5, img_link=$6, updated_at=now() where id = $7", p.Title, p.Description, p.Year, p.Studio, p.Rating, p.ImageLink, p.ID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
@@ -299,7 +311,7 @@ func (d *dbPSQL) InsertProduct(p models.ProductCreate) error {
 	}()
 
 	var productID int
-	err = tx.QueryRow("insert into products(title, description, year, studio, rating) values($1, $2, $3, $4, $5) returning id", p.Title, p.Description, p.Year, p.Studio, p.Rating).Scan(&productID)
+	err = tx.QueryRow("insert into products(title, description, year, studio, rating, img_link) values($1, $2, $3, $4, $5, $6) returning id", p.Title, p.Description, p.Year, p.Studio, p.Rating, p.ImageLink).Scan(&productID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
@@ -427,4 +439,29 @@ func (d *dbPSQL) SelectGenres() ([]models.Genre, error) {
 	}
 
 	return g, nil
+}
+
+func (d *dbPSQL) UpdateUserRole(userId uuid.UUID, role string) error {
+	_, err := d.db.Exec(`UPDATE users SET role=$1, updated_at=now() WHERE id=$2`, role, userId)
+	if driverErr, ok := err.(*pq.Error); ok {
+		if driverErr.Code == foreignKeyViolation {
+			return ErrForeignKeyViolation
+		}
+	}
+	return err
+}
+
+func (d *dbPSQL) GetUsers() ([]models.User, error) {
+	u := make([]models.User, 0)
+
+	stmt := `select id, first_name, last_name, user_name, email, role, created_at, updated_at from users`
+
+	if err := d.db.Select(&u, stmt); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return u, nil
 }

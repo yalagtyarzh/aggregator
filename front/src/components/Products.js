@@ -39,15 +39,20 @@ export default class Products extends Component {
         } else {
             return (
                 <Fragment>
-                    <h2>Products</h2>
+                    <h2>Choose product</h2>
 
-                    <ul>
-                        {products.map((m) => (
-                            <li key={m.id}>
-                                <Link to={`/product/${m.id}`}>{m.title}</Link>
-                            </li>
+                    <div className={"list-group"}>
+                        {products.map((m, index) => (
+                            <Link key={index} to={`/product/${m.id}`}
+                                  className="list-group-item list-group-item-action">
+                                <strong>{m.title}</strong><br/>
+                                <small className={"text-muted"}>
+                                    {m.year}
+                                </small>
+                                <br/>
+                                {m.description.slice(0, 100)}...</Link>
                         ))}
-                    </ul>
+                    </div>
                 </Fragment>
             );
         }

@@ -8,6 +8,7 @@ var (
 	ErrNoProduct          = errors.New("product not found")
 	ErrInvalidUserID      = errors.New("invalid user id")
 	ErrNoPermissions      = errors.New("no permission to do request")
+	ErrSelfPromote        = errors.New("cannot self promote")
 	ErrUserAlreadyCreated = errors.New("user is already created")
 	ErrInvalidRole        = errors.New("invalid role")
 	ErrInvalidPassword    = errors.New("invalid password")
@@ -15,4 +16,5 @@ var (
 	ErrNoToken            = errors.New("token not found")
 	ErrTooManyReviews     = errors.New("too many reviews for user")
 	ErrNoReview           = errors.New("review not found")
+	ErrInvalidGraphql     = errors.New("invalid graphql")
 )

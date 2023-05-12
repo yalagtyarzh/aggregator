@@ -3,6 +3,7 @@ package admin_api
 import (
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/mux"
 	"github.com/yalagtyarzh/aggregator/pkg/errors"
 	"github.com/yalagtyarzh/aggregator/pkg/http/helpers"
 	"github.com/yalagtyarzh/aggregator/pkg/logger"
@@ -59,7 +60,15 @@ func (h *Handlers) productCreate(w http.ResponseWriter, r *http.Request) *helper
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
+
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }
@@ -108,7 +117,101 @@ func (h *Handlers) productUpdate(w http.ResponseWriter, r *http.Request) *helper
 	if err != nil {
 		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
 	}
+
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
+}
+
+func (h *Handlers) PromoteRole(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.promoteRole, w, r, h.log)
+}
+
+func (h *Handlers) promoteRole(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	token, ok := r.Context().Value("token").(models.TokenPayload)
+	if !ok {
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
+	}
+
+	role, ok := mux.Vars(r)["role"]
+	if !ok {
+		return helpers.NewError(http.StatusBadRequest, errors.ErrInvalidRole, "invalid path", false)
+	}
+
+	var req models.PromoteDismissRequest
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&req); err != nil {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid request body", false)
+	}
+
+	err := h.logic.PromoteRole(token, role, req.UserID)
+	if err == errors.ErrNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", true)
+	}
+
+	if err == errors.ErrNoUser {
+		return helpers.NewError(http.StatusBadRequest, err, "no user to promote", true)
+	}
+
+	if err == errors.ErrSelfPromote {
+		return helpers.NewError(http.StatusBadRequest, err, "can not self promote", true)
+	}
+
+	if err == errors.ErrInvalidRole {
+		return helpers.NewError(http.StatusBadRequest, err, "invalid role", true)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(models.StdResp{Message: "Ok"})
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
+
+	return nil
+}
+
+func (h *Handlers) ListUsers(w http.ResponseWriter, r *http.Request) {
+	helpers.CallHandler(h.listUsers, w, r, h.log)
+}
+
+func (h *Handlers) listUsers(w http.ResponseWriter, r *http.Request) *helpers.AppError {
+	token, ok := r.Context().Value("token").(models.TokenPayload)
+	if !ok {
+		return helpers.NewError(http.StatusUnauthorized, errors.ErrInvalidUserID, "invalid user", false)
+	}
+
+	resp, err := h.logic.GetUsers(token)
+	if err == errors.ErrNoPermissions {
+		return helpers.NewError(http.StatusForbidden, err, "no permission to do request", true)
+	}
+
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	b, err := json.Marshal(resp)
+	if err != nil {
+		return helpers.NewError(http.StatusInternalServerError, err, "internal server error", false)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(b)
 
 	return nil
 }
