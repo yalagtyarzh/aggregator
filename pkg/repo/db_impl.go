@@ -210,12 +210,12 @@ func (d *dbPSQL) GetProductsWithFilter(after int, limit int, year int, genre str
 }
 
 func (d *dbPSQL) UpdateReview(rc models.ReviewUpdate) error {
-	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3 where id=$4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
+	_, err := d.db.Exec("update reviews set score=$1, content=$2, content_html=$3, updated_at=now() where id=$4", rc.Score, rc.Content, rc.ContentHTML, rc.ID)
 	return err
 }
 
 func (d *dbPSQL) DeleteReview(reviewID int) error {
-	_, err := d.db.Exec("update reviews set is_deleted=true where id=$1", reviewID)
+	_, err := d.db.Exec("update reviews set is_deleted=true, updated_at=now() where id=$1", reviewID)
 	return err
 }
 
@@ -247,7 +247,7 @@ func (d *dbPSQL) InsertReview(rc models.ReviewCreate, userID uuid.UUID) error {
 }
 
 func (d *dbPSQL) DeleteProduct(productID int) error {
-	_, err := d.db.Exec("update products set is_deleted=true where id = $1", productID)
+	_, err := d.db.Exec("update products set is_deleted=true, updated_at=now() where id = $1", productID)
 	return err
 }
 
@@ -263,7 +263,7 @@ func (d *dbPSQL) UpdateProduct(p models.ProductUpdate) error {
 			}
 		}()
 	}()
-	_, err = tx.Exec("update products set title = $1, description = $2, year = $3, studio = $4, rating = $5, img_link = $6 where id = $7", p.Title, p.Description, p.Year, p.Studio, p.Rating, p.ImageLink, p.ID)
+	_, err = tx.Exec("update products set title=$1, description=$2, year=$3, studio=$4, rating=$5, img_link=$6, updated_at=now() where id = $7", p.Title, p.Description, p.Year, p.Studio, p.Rating, p.ImageLink, p.ID)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
@@ -442,7 +442,7 @@ func (d *dbPSQL) SelectGenres() ([]models.Genre, error) {
 }
 
 func (d *dbPSQL) UpdateUserRole(userId uuid.UUID, role string) error {
-	_, err := d.db.Exec(`UPDATE users SET role=$1 WHERE id=$2`, role, userId)
+	_, err := d.db.Exec(`UPDATE users SET role=$1, updated_at=now() WHERE id=$2`, role, userId)
 	if driverErr, ok := err.(*pq.Error); ok {
 		if driverErr.Code == foreignKeyViolation {
 			return ErrForeignKeyViolation
