@@ -33,13 +33,13 @@ export default class Products extends Component {
     render() {
         const {products, isLoaded, error} = this.state
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
-                    <h2>Choose product</h2>
+                    <h2>Выбор продукта</h2>
 
                     <div className={"list-group"}>
                         {products.map((m, index) => (

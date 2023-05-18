@@ -51,11 +51,11 @@ export default class EditProduct extends Component {
                 message: "",
             },
             ratingOptions: [
-                {id: "G", value: "G"},
-                {id: "PG", value: "PG"},
-                {id: "PG-13", value: "PG-13"},
-                {id: "R", value: "R"},
-                {id: "NC-17", value: "NC-17"},
+                {id: "0+", value: "0+"},
+                {id: "6+", value: "6+"},
+                {id: "12+", value: "12+"},
+                {id: "16+", value: "16+"},
+                {id: "18+", value: "18+"},
             ],
         };
 
@@ -133,11 +133,11 @@ export default class EditProduct extends Component {
 
     confirmDelete = (e) => {
         confirmAlert({
-            title: "Delete Product?",
-            message: "Are you sure?",
+            title: "Удалить продукт?",
+            message: "Вы уверены?",
             buttons: [
                 {
-                    label: "Yes",
+                    label: "Да",
                     onClick: () => {
 
                         const p = {id: this.state.product.id, delete: true}
@@ -244,6 +244,7 @@ export default class EditProduct extends Component {
                                 year: json.year,
                                 studio: json.studio,
                                 rating: json.rating,
+                                imageLink: json.imageLink,
                             },
                             isLoaded: true,
                         },
@@ -274,36 +275,36 @@ export default class EditProduct extends Component {
         } else {
             return (
                 <Fragment>
-                    <h2>Add/Edit Product</h2>
+                    <h2>Добавить/редактировать продукт</h2>
                     <Alert
                         alertType={this.state.alert.type} alertMessage={this.state.alert.message}/>
                     <hr/>
                     <form onSubmit={this.handleSubmit}>
                         <input type="hidden" name={"id"} id={"id"} value={product.id} onChange={this.handleChange}/>
 
-                        <Input title={"Title"} className={this.hasError("title") ? "is-invalid" : ""} type={"text"}
-                               name={"title"} value={product.title} errorMsg={"Please enter a title"}
+                        <Input title={"Наименование"} className={this.hasError("title") ? "is-invalid" : ""} type={"text"}
+                               name={"title"} value={product.title} errorMsg={"Введите наименование продукта"}
                                errorDiv={this.hasError("title") ? "text-danger" : "d-none"}
                                handleChange={this.handleChange}/>
-                        <Input title={"Year"} type={"number"} name={"year"} value={product.year}
+                        <Input title={"Год выпуска"} type={"number"} name={"year"} value={product.year}
                                handleChange={this.handleChange}/>
-                        <Input title={"Studio"} type={"text"} name={"studio"} value={product.studio}
+                        <Input title={"Студия/Компания"} type={"text"} name={"studio"} value={product.studio}
                                handleChange={this.handleChange}/>
 
-                        <Select title={"Rating"} name={"rating"} options={this.state.ratingOptions}
+                        <Select title={"Возрастной рейтинг"} name={"rating"} options={this.state.ratingOptions}
                                 value={product.rating}
-                                handleChange={this.handleChange} placeholder={"Choose..."}/>
+                                handleChange={this.handleChange} placeholder={"Выбор..."}/>
 
-                        <TextArea title={"Description"} handleChange={this.handleChange} name={"description"}
+                        <TextArea title={"Описание"} handleChange={this.handleChange} name={"description"}
                                   value={product.description} rows={"3"}/>
 
-                        <Input title={"Image Link"} className={this.hasError("imageLink") ? "is-invalid" : ""} type={"text"}
-                               name={"imageLink"} value={product.imageLink} errorMsg={"Please enter a valid link"}
+                        <Input title={"Ссылка на картинку"} className={this.hasError("imageLink") ? "is-invalid" : ""} type={"text"}
+                               name={"imageLink"} value={product.imageLink} errorMsg={"Введите валидную ссылку"}
                                errorDiv={this.hasError("imageLink") ? "text-danger" : "d-none"}
                                handleChange={this.handleChange}/>
 
                         <MultipleCheckbox
-                            title={"Genres"}
+                            title={"Жанры"}
                             name={"genres"}
                             options={this.state.genres}
                             handleChange={this.handleCheckboxChange}
@@ -311,15 +312,15 @@ export default class EditProduct extends Component {
 
                         <hr/>
 
-                        <button className={"btn btn-primary"}>Save</button>
+                        <button className={"btn btn-primary"}>Сохранить</button>
                         <Link to={"/admin"} className={"btn btn-warning ms-1"}>
-                            Cancel
+                            Отмена
                         </Link>
 
                         {product.id > 0 && (
                             <a href={"#!"} onClick={() => this.confirmDelete()}
                                className={"btn btn-danger ms-1"}>
-                                Delete
+                                Удалить
                             </a>
                         )}
                     </form>

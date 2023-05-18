@@ -96,26 +96,26 @@ export default class ReviewForm extends Component {
 
         return (
             <div>
-                <h3>Write a review</h3>
+                <h3>Написать отзыв</h3>
                 <Alert
                     alertType={this.state.alert.type} alertMessage={this.state.alert.message}/>
                 <form onSubmit={this.handleSubmit}>
                     <div className="form-group">
-                        <label htmlFor="content">Review:</label>
+                        <label htmlFor="content">Отзыв:</label>
                         <textarea
                             name={"content"}
                             className={`form-control ${this.hasError("content") ? "is-invalid" : ""}`}
                             id="content"
                             rows="3"
-                            placeholder="Enter your comment"
+                            placeholder="Оставьте отзыв"
                             onChange={this.handleChange}
                         />
                     </div>
-                    <div className={this.hasError("content") ? "text-danger" : "d-none"}>Need at least 20 characters</div>
+                    <div className={this.hasError("content") ? "text-danger" : "d-none"}>В отзыве нужно минимум 20 символов</div>
                     <div className={"mt-3"} />
 
                     <div className="form-group d-flex">
-                        <label htmlFor="score" className={"p-2"}>Score:</label>
+                        <label htmlFor="score" className={"p-2"}>Оценка:</label>
                         <input
                             name={"score"}
                             type="range"
@@ -129,7 +129,7 @@ export default class ReviewForm extends Component {
                         />
 
                         <output className="form-control-range-output p-2">{review.score}</output>
-                        <div className={this.hasError("score") ? "text-danger" : "d-none"}>Invalid score</div>
+                        <div className={this.hasError("score") ? "text-danger" : "d-none"}>Неправильная оценка</div>
                         <button type="submit" className="btn btn-primary ms-auto">
                             Submit
                         </button>

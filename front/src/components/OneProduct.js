@@ -40,9 +40,9 @@ export default class OneProduct extends Component {
         }
 
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
@@ -51,7 +51,7 @@ export default class OneProduct extends Component {
                     </h2>
 
                     <div className={"float-start"}>
-                        <small>Rating: {product.rating}</small>
+                        <small>Возрастной рейтинг: {product.rating}</small>
                     </div>
                     <div className={"float-end"}>
                         {product.genres.map((m, index) => (
@@ -65,26 +65,28 @@ export default class OneProduct extends Component {
                     <hr/>
 
                     <div className="row d-flex align-items-center">
-                        <div className="col-md-3 d-flex justify-content-center align-items-center product-image"
+                        <div className="col-md-3 d-flex justify-content-center align-items-center"
                              style={{height: "200px"}}>
                             <img
                                 src={this.state.product.imageLink} className={"rounded border border-secondary"}
                                 alt="xd" style={{maxWidth: '100%', height: '100%', objectFit: 'cover'}}/>
                         </div>
-                        <div className="col-md-9">
+                        <div className="col-md-8">
                             <table className="table table-compact">
                                 <thead></thead>
                                 <tbody>
                                 <tr>
-                                    <td><strong>Description:</strong></td>
-                                    <td>{this.state.product.description}</td>
+                                    <td className={"col-md-2"}><strong>Описание:</strong></td>
+                                    <td>
+                                        <p className={"text-justify"}>{this.state.product.description}</p>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Studio:</strong></td>
+                                    <td><strong>Студия:</strong></td>
                                     <td>{this.state.product.studio}</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Score:</strong></td>
+                                    <td><strong>Оценка:</strong></td>
                                     <td>{this.state.product.score}</td>
                                 </tr>
                                 </tbody>
@@ -94,7 +96,8 @@ export default class OneProduct extends Component {
 
                     <hr/>
 
-                    <Reviews  jwt={this.props.jwt} role={this.props.role} id={this.props.match.params.id} userId={this.props.userId} pid={this.props.match.params.id}/>
+                    <Reviews jwt={this.props.jwt} role={this.props.role} id={this.props.match.params.id}
+                             userId={this.props.userId} pid={this.props.match.params.id}/>
 
                 </Fragment>
             )

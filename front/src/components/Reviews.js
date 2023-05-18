@@ -42,11 +42,11 @@ export default class Reviews extends Component {
 
     confirmDelete = (id) => {
         confirmAlert({
-            title: "Delete Review?",
-            message: "Are you sure?",
+            title: "Удалить отзыв?",
+            message: "Вы уверены?",
             buttons: [
                 {
-                    label: "Yes",
+                    label: "Да",
                     onClick: () => {
 
                         const p = {id: id, delete: true}
@@ -90,13 +90,13 @@ export default class Reviews extends Component {
 
                 {this.state.reviews.length > 0 ? (
                     <div>
-                        <h3>User Reviews</h3>
+                        <h3>Пользовательские отзывы</h3>
                         {this.state.reviews.map((review) => (
                             <div className="card mt-2" key={review.id}>
                                 <div className="card-body">
                                     <span className={"d-flex justify-content-between"}>
                                         <h5 className="card-title">{review.userName}</h5>
-                                        <p className={"m-0"}>Score: {review.score}</p>
+                                        <p className={"m-0"}>Оценка: {review.score}</p>
                                     </span>
                                     <h6 className="card-subtitle mb-2 text-muted">{review.firstName} {review.lastName}</h6>
 
@@ -105,16 +105,9 @@ export default class Reviews extends Component {
                                         {((this.props.userId === review.userId) || (this.props.role !== "Registered")) && (
                                             <a href={"#!"} onClick={() => this.confirmDelete(review.id)}
                                                className={"btn btn-danger ms-1"}>
-                                                Delete
+                                                Удалить
                                             </a>
                                         )}
-
-                                        {/*{this.props.userId === review.userId && (*/}
-                                        {/*    <a href={"#!"} onClick={() => this.confirmDelete()}*/}
-                                        {/*       className={"btn btn-primary ms-1"}>*/}
-                                        {/*        Edit*/}
-                                        {/*    </a>*/}
-                                        {/*)}*/}
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +116,7 @@ export default class Reviews extends Component {
                     </div>
 
 
-                ) : (<p>No reviews yet.</p>)}
+                ) : (<p>Для данного продукта еще не написан отзыв.</p>)}
             </div>
         );
     };

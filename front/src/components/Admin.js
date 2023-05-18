@@ -43,13 +43,13 @@ export default class Admin extends Component {
     render() {
         const {products, isLoaded, error} = this.state
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
-                    <h2>Manage products</h2>
+                    <h2>Управление продуктами</h2>
 
                     <div className={"list-group"}>
                         {products.map((m, index) => (

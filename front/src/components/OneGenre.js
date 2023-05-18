@@ -44,13 +44,13 @@ export default class OneGenre extends Component {
         }
 
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
-                    <h2>Genre: {genreName}</h2>
+                    <h2>Жанр: {genreName}</h2>
 
                     <div className={"list-group"}>
                         {products.map((m, index) => (

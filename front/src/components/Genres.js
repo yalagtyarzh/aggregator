@@ -37,13 +37,13 @@ export default class Genres extends Component {
         const {genres, isLoaded, error} = this.state;
 
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
-                    <h2>Genres</h2>
+                    <h2>Жанры</h2>
 
                     <div className={"list-group"}>
                         {genres.map((m, i) => (

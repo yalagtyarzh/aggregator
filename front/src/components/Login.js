@@ -36,11 +36,11 @@ export default class Login extends Component {
 
         let errors = [];
 
-        if (this.state.userName === "") {
+        if (this.state.userName === "" || this.state.userName.length < 3 || this.state.userName.length > 32) {
             errors.push("userName");
         }
 
-        if (this.state.password === "") {
+        if (this.state.password === "" || this.state.password.length < 3 || this.state.password.length > 32) {
             errors.push("password");
         }
 
@@ -92,25 +92,25 @@ export default class Login extends Component {
     render() {
         return (
             <Fragment>
-                <h2>Login</h2>
+                <h2>Вход</h2>
                 <hr/>
                 <Alert alertType={this.state.alert.type}
                        alertMessage={this.state.alert.message}/>
 
                 <form className={"pt-3"} onSubmit={this.handleSubmit}>
-                    <Input title={"Username"} type={"text"} name={"userName"} handleChange={this.handleChange}
+                    <Input title={"Имя пользователя"} type={"text"} name={"userName"} handleChange={this.handleChange}
                            className={this.hasError("userName") ? "is-invalid" : ""}
                            errorDiv={this.hasError("userName") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a valid username"}/>
+                           errorMsg={"Имя пользователя должно быть больше 2, но меньше 33"}/>
 
-                    <Input title={"Password"} type={"password"} name={"password"} handleChange={this.handleChange}
+                    <Input title={"Пароль"} type={"password"} name={"password"} handleChange={this.handleChange}
                            className={this.hasError("password") ? "is-invalid" : ""}
                            errorDiv={this.hasError("password") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a password"}/>
+                           errorMsg={"Пароль должен быть больше 2, но меньше 33"}/>
 
                     <hr/>
 
-                    <button className={"btn btn-primary"}>Login</button>
+                    <button className={"btn btn-primary"}>Войти</button>
                 </form>
             </Fragment>
         );

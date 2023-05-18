@@ -46,9 +46,9 @@ export default class App extends Component {
     render() {
         let loginLink;
         if (this.state.jwt === "") {
-            loginLink = <Link to={"/login"}>Login</Link>
+            loginLink = <Link to={"/login"}>Войти</Link>
         } else {
-            loginLink = <Link to={"/logout"} onClick={this.logout}>Logout</Link>
+            loginLink = <Link to={"/logout"} onClick={this.logout}>Выход</Link>
         }
 
         return (
@@ -66,7 +66,7 @@ export default class App extends Component {
                                 {loginLink}
                             </span>
                             {this.state.jwt === "" && (
-                                <Link to={"/register"}>Sign in</Link>)}
+                                <Link to={"/register"}>Регистрация</Link>)}
                         </div>
 
 
@@ -77,26 +77,26 @@ export default class App extends Component {
                                 <nav>
                                     <ul className="list-group">
                                         <li className="list-group-item">
-                                            <Link to="/">Home</Link>
+                                            <Link to="/">Главная</Link>
                                         </li>
                                         <li className="list-group-item">
-                                            <Link to="/genres">Genres</Link>
+                                            <Link to="/genres">Жанры</Link>
                                         </li>
 
                                         <li className={"list-group-item"}>
-                                            <Link to={"/graphql"}>Search product</Link>
+                                            <Link to={"/graphql"}>Поиск продукта</Link>
                                         </li>
 
                                         {this.state.role === "Admin" && (
                                             <Fragment>
                                                 <li className="list-group-item">
-                                                    <Link to="/admin/product/0">Add Product</Link>
+                                                    <Link to="/admin/product/0">Добавить продукт</Link>
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <Link to="/admin">Manage Products</Link>
+                                                    <Link to="/admin">Управление продуктами</Link>
                                                 </li>
                                                 <li className="list-group-item">
-                                                    <Link to="/users">Users</Link>
+                                                    <Link to="/users">Пользователи</Link>
                                                 </li>
                                             </Fragment>
                                         )}

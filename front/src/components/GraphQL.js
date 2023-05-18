@@ -111,11 +111,11 @@ export default class GraphQL extends Component {
 
         return (
             <Fragment>
-                <h2>Search product</h2>
+                <h2>Поиск продукта</h2>
                 <hr/>
 
                 <Input
-                    title={"Search"} type={"text"} name={"search"} value={this.state.searchTerm} handleChange={this.handleChange}
+                    title={"Поиск"} type={"text"} name={"search"} value={this.state.searchTerm} handleChange={this.handleChange}
                 />
 
                 <div className={"list-group"}>
@@ -131,8 +131,6 @@ export default class GraphQL extends Component {
                     ))}
                 </div>
             </Fragment>
-
         );
-
     }
 }

@@ -124,46 +124,46 @@ export default class Register extends Component {
     render() {
         return (
             <Fragment>
-                <h2>Sign in</h2>
+                <h2>Регистрация</h2>
                 <hr/>
                 <Alert alertType={this.state.alert.type}
                        alertMessage={this.state.alert.message}/>
 
 
                 <form className={"pt-3"} onSubmit={this.handleSubmit}>
-                    <Input title={"First name"} type={"text"} name={"firstName"} handleChange={this.handleChange}
+                    <Input title={"Имя"} type={"text"} name={"firstName"} handleChange={this.handleChange}
                            className={this.hasError("firstName") ? "is-invalid" : ""}
                            errorDiv={this.hasError("firstName") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a valid first name"}/>
+                           errorMsg={"Имя должно быть больше 1, но меньше 33 символов"}/>
 
-                    <Input title={"Last name"} type={"text"} name={"lastName"} handleChange={this.handleChange}
+                    <Input title={"Фамилия"} type={"text"} name={"lastName"} handleChange={this.handleChange}
                            className={this.hasError("lastName") ? "is-invalid" : ""}
                            errorDiv={this.hasError("lastName") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a valid last name"}/>
+                           errorMsg={"Фамилия должна быть больше 1, но меньше 33 символов"}/>
 
-                    <Input title={"Username"} type={"text"} name={"userName"} handleChange={this.handleChange}
+                    <Input title={"Имя пользователя"} type={"text"} name={"userName"} handleChange={this.handleChange}
                            className={this.hasError("userName") ? "is-invalid" : ""}
                            errorDiv={this.hasError("userName") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a valid username"}/>
+                           errorMsg={"Имя пользователя должно быть больше 2, но меньше 33"}/>
 
-                    <Input title={"Email"} type={"email"} name={"email"} handleChange={this.handleChange}
+                    <Input title={"Электронная почта"} type={"email"} name={"email"} handleChange={this.handleChange}
                            className={this.hasError("email") ? "is-invalid" : ""}
                            errorDiv={this.hasError("email") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a valid email"}/>
+                           errorMsg={"Введите валидную электронную почту"}/>
 
-                    <Input title={"Password"} type={"password"} name={"password"} handleChange={this.handleChange}
+                    <Input title={"Пароль"} type={"password"} name={"password"} handleChange={this.handleChange}
                            className={this.hasError("password") ? "is-invalid" : ""}
                            errorDiv={this.hasError("password") ? "text-danger" : "d-none"}
-                           errorMsg={"Please enter a password"}/>
+                           errorMsg={"Пароль должен быть больше 2, но меньше 33"}/>
 
-                    <Input title={"Confirm password"} type={"text"} name={"confirm"} handleChange={this.handleChange}
+                    <Input title={"Повторите пароль"} type={"password"} name={"confirm"} handleChange={this.handleChange}
                            className={this.hasError("confirm") ? "is-invalid" : ""}
                            errorDiv={this.hasError("confirm") ? "text-danger" : "d-none"}
-                           errorMsg={"Password confirmation failed"}/>
+                           errorMsg={"Пароли не совпадают"}/>
 
                     <hr/>
 
-                    <button className={"btn btn-primary"}>Sign in</button>
+                    <button className={"btn btn-primary"}>Зарегистрироваться</button>
                 </form>
             </Fragment>
         );

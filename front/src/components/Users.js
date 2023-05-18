@@ -48,10 +48,6 @@ export default class Users extends Component {
             })
     }
 
-    promote = (userId) => {
-
-    }
-
     render() {
         let {users, isLoaded, error} = this.state;
 
@@ -60,21 +56,21 @@ export default class Users extends Component {
         }
 
         if (error) {
-            return <div>Error: {error.message}</div>
+            return <div>Ошибка: {error.message}</div>
         } else if (!isLoaded) {
-            return <p>Loading...</p>
+            return <p>Загрузка...</p>
         } else {
             return (
                 <Fragment>
-                    <h2>Users</h2>
+                    <h2>Пользователи</h2>
                     <hr/>
                     <table className={"table"}>
                         <thead>
                         <tr>
                             <th className={"col-md-5"}>User ID</th>
-                            <th>Name</th>
-                            <th>Role</th>
-                            <th>Action</th>
+                            <th>Имя</th>
+                            <th>Роль</th>
+                            <th>Действие</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -109,7 +105,7 @@ export default class Users extends Component {
                                                                 this.componentDidMount()
                                                             }
                                                         })
-                                                }}>Promote</button>
+                                                }}>Повысить</button>
                                             )) ||
                                         (user.role === "Moderator" &&
                                             <button className="btn btn-danger" onClick={() => {
@@ -133,7 +129,7 @@ export default class Users extends Component {
                                                             this.componentDidMount()
                                                         }
                                                     })
-                                            }}>Dismiss</button>
+                                            }}>Понизить</button>
                                         )}
                                 </td>
                             </tr>
